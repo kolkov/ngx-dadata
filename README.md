@@ -1,5 +1,5 @@
 # ngx-dadata
-Angular 6+ DaData implementation
+Angular 6+ [DaData][dadata] suggestion (подсказки) implementation
 
 ## Getting Started
 
@@ -16,10 +16,12 @@ npm install @kolkov/ngx-dadata --save
 Import `ngx-dadata` module
 
 ```typescript
+import { HttpClientModule } from '@angular/common/http';
+...
 import { NgxDaDataModule } from '@kolkov/ngx-dadata';
 
 @NgModule({
-  imports: [ NgxDaDataModule ]
+  imports: [ HttpClientModule, NgxDaDataModule ]
 })
 ```
 
@@ -55,5 +57,6 @@ Demo is here [demo][demo]
 Working code for this demo at stackblitz [example][example]
 
 [npm]: https://www.npmjs.com/
+[dadata]: https://dadata.ru/api/suggest/
 [demo]: https://ngx-dadata.stackblitz.io/
 [example]: https://stackblitz.com/edit/ngx-dadata
