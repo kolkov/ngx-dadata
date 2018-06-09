@@ -54,6 +54,7 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
   }
 
   ngOnInit() {
+    this.type = this.config.type;
     this.inputString$.pipe(
       debounce(() => timer(500)),
     ).subscribe(x => {
