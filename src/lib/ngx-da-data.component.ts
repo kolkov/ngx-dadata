@@ -17,17 +17,17 @@ import {DaDataSuggestion} from "./models/suggestion";
 import {DaDataConfig, DaDataConfigDefault} from "./da-data-config";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 
+const NGX_DADATA_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => NgxDaDataComponent),
+  multi: true
+};
+
 @Component({
   selector: 'ngx-da-data',
   templateUrl: "./ngx-da-data.component.html",
   styleUrls: ['./ngx-da-data.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => NgxDaDataComponent),
-      multi: true
-    }
-  ]
+  providers: [ NGX_DADATA_VALUE_ACCESSOR ]
 })
 export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
   private _value: any = '';
