@@ -28,7 +28,7 @@ import { NgxDaDataModule } from '@kolkov/ngx-dadata';
 Then in HTML
 
 ```html
-<ngx-da-data [type]="config.type" [(ngModel)]="currentAddress"></ngx-da-data>
+<ngx-da-data [config]="config" [(ngModel)]="currentAddress"></ngx-da-data>
 ```
 
 or
@@ -45,6 +45,7 @@ import { DaDataConfig } from 'ngx-dadata';
 ...
 
 config: DaDataConfig = {
+    apiKey: 'your_api_key',
     type: DaDataType.address
   };
 ```

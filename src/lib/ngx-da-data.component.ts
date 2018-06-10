@@ -36,9 +36,10 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
   data: DaDataSuggestion[] = [];
 
   @Input() config: DaDataConfig = DaDataconfigDefault;
+  @Input() apiKey: string;
   @Input() disabled = null;
   @Input() type = DaDataType.address;
-  @Input() limit = 10;
+  @Input() limit = DaDataconfigDefault.limit;
 
   @Output() selectedSuggestion: DaDataSuggestion;
   @Output() selected = new EventEmitter<DaDataSuggestion>();
@@ -55,8 +56,9 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit() {
     this.type = this.config.type;
+    this.dataService.setApiKey(this.apiKey ? this.apiKey : this.config.apiKey);
     this.inputString$.pipe(
-      debounce(() => timer(500)),
+      debounce(() => timer(this.config.delay ? this.config.delay : 500)),
     ).subscribe(x => {
       this.dataService.getData(x, this.type, this.limit).subscribe((y: DaDataResponse) => {
         this.data = y.suggestions;

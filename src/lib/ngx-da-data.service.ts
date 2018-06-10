@@ -15,15 +15,20 @@ export enum DaDataType {
   providedIn: 'root'
 })
 export class NgxDaDataService {
+  apiKey = '';
 
   constructor(private http: HttpClient) { }
+
+  setApiKey(key: string) {
+    this.apiKey = key;
+  }
 
   getData(value: string, type: DaDataType = DaDataType.address, count: number = 10): Observable<DaDataResponse>{
     const httpOptions = {
       headers: new HttpHeaders({
         'Accept': 'application/json',
         'Content-Type':  'application/json',
-        'Authorization': 'Token 2e51c5fbc1a60bd48face95951108560bf03f7d9'
+        'Authorization': 'Token ' + this.apiKey,
       })
     };
     const body = { query: value, count: count };
