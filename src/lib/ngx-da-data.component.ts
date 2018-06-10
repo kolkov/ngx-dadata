@@ -14,7 +14,7 @@ import {Subject, timer} from "rxjs";
 import {debounce} from "rxjs/operators";
 import {DaDataResponse} from "./models/da-data-response";
 import {DaDataSuggestion} from "./models/suggestion";
-import {DaDataConfig, DaDataconfigDefault} from "./da-data-config";
+import {DaDataConfig, DaDataConfigDefault} from "./da-data-config";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 
 @Component({
@@ -35,11 +35,11 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
 
   data: DaDataSuggestion[] = [];
 
-  @Input() config: DaDataConfig = DaDataconfigDefault;
+  @Input() config: DaDataConfig = DaDataConfigDefault;
   @Input() apiKey: string;
   @Input() disabled = null;
   @Input() type = DaDataType.address;
-  @Input() limit = DaDataconfigDefault.limit;
+  @Input() limit = DaDataConfigDefault.limit;
 
   @Output() selectedSuggestion: DaDataSuggestion;
   @Output() selected = new EventEmitter<DaDataSuggestion>();

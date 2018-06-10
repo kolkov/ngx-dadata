@@ -9,7 +9,7 @@ export interface DaDataConfig {
   minWidth?: '0' | string,
 }
 
-export const DaDataconfigDefault: DaDataConfig = {
+export const DaDataConfigDefault: DaDataConfig = {
   apiKey: '',
   type: DaDataType.address,
   delay: 500,
