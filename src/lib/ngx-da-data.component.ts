@@ -2,11 +2,14 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  forwardRef, HostListener,
+  forwardRef,
+  HostListener,
   Input,
+  OnChanges,
   OnInit,
   Output,
   Renderer2,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {DaDataType, NgxDaDataService} from "./ngx-da-data.service";
@@ -15,7 +18,8 @@ import {debounce} from "rxjs/operators";
 import {DaDataResponse} from "./models/da-data-response";
 import {DaDataSuggestion} from "./models/suggestion";
 import {DaDataConfig, DaDataConfigDefault} from "./da-data-config";
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {DaDataAddress, DaDataBank, DaDataEmail, DaDataFIO, DaDataParty} from "./models/data";
 
 const NGX_DADATA_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -23,13 +27,32 @@ const NGX_DADATA_VALUE_ACCESSOR = {
   multi: true
 };
 
+/*const NGX_DADATA_VALIDATOR = {
+  provide: NG_VALIDATORS,
+  useExisting: forwardRef(() => NgxDaDataComponent),
+  multi: true,
+};*/
+
+export function createDaDataValidator(value) {
+  return (c: FormControl) => {
+    const err = {
+      rangeError: {
+        given: c.value,
+        expected: value,
+      }
+    };
+
+    return (c.value !== value) ? err : null;
+  };
+}
+
 @Component({
   selector: 'ngx-da-data',
-  templateUrl: "./ngx-da-data.component.html",
+  templateUrl: './ngx-da-data.component.html',
   styleUrls: ['./ngx-da-data.component.scss'],
-  providers: [ NGX_DADATA_VALUE_ACCESSOR ]
+  providers: [NGX_DADATA_VALUE_ACCESSOR, /*NGX_DADATA_VALIDATOR*/]
 })
-export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
+export class NgxDaDataComponent implements OnInit, ControlValueAccessor, OnChanges {
   private _value: any = '';
   currentFocus = -1;
 
@@ -40,21 +63,38 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
   @Input() disabled = null;
   @Input() type = DaDataType.address;
   @Input() limit = DaDataConfigDefault.limit;
+  @Input() placeholder = '';
 
   @Output() selectedSuggestion: DaDataSuggestion;
-  @Output() selected = new EventEmitter<DaDataSuggestion>();
+  @Output() selectedData = new EventEmitter<DaDataAddress | DaDataFIO | DaDataBank | DaDataParty | DaDataEmail>();
+  @Output() selectedString = new EventEmitter<string>();
 
   @ViewChild('inputValue') inputValue: ElementRef;
 
   private inputString$ = new Subject<string>();
 
-  onChange = (value: string) => {};
+  // onChange = (value: string) => {};
   onTouched = () => {};
+  propagateChange: any = () => {};
+  validateFn: any = () => {};
 
   constructor(private dataService: NgxDaDataService, private _r: Renderer2) {
   }
 
+  get value(): any {
+    return this._value;
+  }
+
+  set value(v: any) {
+    if (v !== this._value) {
+      this._value = v;
+      this.propagateChange(v);
+    }
+  }
+
   ngOnInit() {
+    /*this.validateFn = createDaDataValidator(this._value);
+    this.propagateChange(this._value);*/
     this.type = this.config.type;
     this.dataService.setApiKey(this.apiKey ? this.apiKey : this.config.apiKey);
     this.inputString$.pipe(
@@ -62,8 +102,14 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
     ).subscribe(x => {
       this.dataService.getData(x, this.type, this.limit).subscribe((y: DaDataResponse) => {
         this.data = y.suggestions;
-      })
-    })
+      });
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.value) {
+
+    }
   }
 
   getData(value: string) {
@@ -71,29 +117,22 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
     this.currentFocus = -1;
   }
 
-  get value(): any {
-    return this._value;
-  };
-
-  set value(v: any) {
-    if (v !== this._value) {
-      this._value = v;
-      this.onChange(v);
-    }
-  }
-
-  onClick(item: DaDataSuggestion) {
+  onClick(e: MouseEvent, item: DaDataSuggestion) {
+    //e.preventDefault();
     this.inputValue.nativeElement.value = item.value;
+    this.propagateChange(item.value);
     this.inputValue.nativeElement.focus();
     this.selectedSuggestion = item;
     this.data = [];
     this.currentFocus = -1;
-    this.writeValue(item.value);
-    this.selected.emit(item);
+
+    //this.writeValue(item.value);
+    this.selectedData.emit(item.data);
+    this.selectedString.emit(item.value);
   }
 
   @HostListener('document:click')
-  onOutsideClick(){
+  onOutsideClick() {
     this.data = [];
   }
 
@@ -109,7 +148,7 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
 
   onArrowUp() {
     this.removeFocus(this.currentFocus);
-    if (this.currentFocus == 0) {
+    if (this.currentFocus === 0) {
       this.currentFocus = this.data.length - 1;
     } else {
       this.currentFocus--;
@@ -122,8 +161,10 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
     this.inputValue.nativeElement.value = this.selectedSuggestion.value;
     this.data = [];
     this.currentFocus = -1;
-    this.writeValue(this.selectedSuggestion.value);
-    this.selected.emit(this.selectedSuggestion);
+    this.propagateChange(this.selectedSuggestion.value);
+    // this.writeValue(this.selectedSuggestion.value);
+    this.selectedData.emit(this.selectedSuggestion.data);
+    this.selectedString.emit(this.selectedSuggestion.value);
   }
 
   setFocus(id: number) {
@@ -132,15 +173,17 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
   }
 
   removeFocus(id: number) {
-    if (id != -1) {
+    if (id !== -1) {
       const activeEl = document.getElementById(id + "item");
       this._r.removeClass(activeEl, "active");
     }
   }
 
   writeValue(value: any): void {
-    this._value = value;
-    this.onChange(value);
+    if (value !== undefined) {
+      this._value = value;
+    }
+    // this.onChange(value);
   }
 
   /**
@@ -150,7 +193,8 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor {
    * @param fn a function
    */
   registerOnChange(fn: any): void {
-    this.onChange = fn;
+    // this.onChange = fn;
+    this.propagateChange = fn;
   }
 
   /**

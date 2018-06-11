@@ -1,17 +1,17 @@
-* { box-sizing: border-box; }
-body {
+//* { box-sizing: border-box; }
+/*body {
   font: 16px Arial;
-}
+}*/
 .autocomplete {
   /*the container must be positioned relative:*/
   position: relative;
-  display: inline-block;
+  //display: inline-block;
 }
 input {
-  border: 1px solid transparent;
+  border: 0 solid transparent;
   background-color: #f1f1f1;
-  padding: 10px;
-  font-size: 16px;
+  padding: 5px;
+  //font-size: 16px;
 }
 input[type=text] {
   background-color: #f1f1f1;
