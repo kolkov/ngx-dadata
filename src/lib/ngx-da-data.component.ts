@@ -66,14 +66,15 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor, OnChang
   @Input() placeholder = '';
 
   @Output() selectedSuggestion: DaDataSuggestion;
-  @Output() selectedData = new EventEmitter<DaDataAddress | DaDataFIO | DaDataBank | DaDataParty | DaDataEmail>();
-  @Output() selectedString = new EventEmitter<string>();
+  @Output() selected = new EventEmitter<DaDataSuggestion>();
+  // @Output() selectedData = new EventEmitter<DaDataAddress | DaDataFIO | DaDataBank | DaDataParty | DaDataEmail>();
+  // @Output() selectedString = new EventEmitter<string>();
 
   @ViewChild('inputValue') inputValue: ElementRef;
 
   private inputString$ = new Subject<string>();
 
-  // onChange = (value: string) => {};
+  // onSuggestionSelected = (value: string) => {};
   onTouched = () => {};
   propagateChange: any = () => {};
   validateFn: any = () => {};
@@ -127,8 +128,9 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor, OnChang
     this.currentFocus = -1;
 
     //this.writeValue(item.value);
-    this.selectedData.emit(item.data);
-    this.selectedString.emit(item.value);
+    this.selected.emit(item);
+    // this.selectedData.emit(item.data);
+    // this.selectedString.emit(item.value);
   }
 
   @HostListener('document:click')
@@ -163,8 +165,9 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor, OnChang
     this.currentFocus = -1;
     this.propagateChange(this.selectedSuggestion.value);
     // this.writeValue(this.selectedSuggestion.value);
-    this.selectedData.emit(this.selectedSuggestion.data);
-    this.selectedString.emit(this.selectedSuggestion.value);
+    this.selected.emit(this.selectedSuggestion);
+    // this.selectedData.emit(this.selectedSuggestion.data);
+    // this.selectedString.emit(this.selectedSuggestion.value);
   }
 
   setFocus(id: number) {
@@ -183,7 +186,7 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor, OnChang
     if (value !== undefined) {
       this._value = value;
     }
-    // this.onChange(value);
+    // this.onSuggestionSelected(value);
   }
 
   /**
@@ -193,7 +196,7 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor, OnChang
    * @param fn a function
    */
   registerOnChange(fn: any): void {
-    // this.onChange = fn;
+    // this.onSuggestionSelected = fn;
     this.propagateChange = fn;
   }
 
