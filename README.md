@@ -3,6 +3,11 @@ Angular 6+ [DaData][dadata] suggestion (подсказки) implementation
 
 ## Getting Started
 
+### Demo
+Demo is here [demo][demo]
+
+Working code for this demo at stackblitz [example][example]
+
 ### Installation
 
 Install via [npm][npm] package manager
@@ -34,13 +39,13 @@ Then in HTML
 or
 
 ```html
-<angular-editor formControlName="currentAddress" [config]="config"></angular-editor>
+<ngx-da-data formControlName="currentAddress" [config]="config"></ngx-da-data>
 ```
 
 where
 
 ```typescript
-import { DaDataConfig } from 'ngx-dadata';
+import { DaDataConfig } from '@kolkov/ngx-dadata';
 
 ...
 
@@ -51,11 +56,6 @@ config: DaDataConfig = {
 ```
 
 For `ngModel` to work, you must import `FormsModule` from `@angular/forms`, or for `formControlName`, you must import `ReactiveFormsModule` from `@angular/forms`
-
-## Demo
-Demo is here [demo][demo]
-
-Working code for this demo at stackblitz [example][example]
 
 [npm]: https://www.npmjs.com/
 [dadata]: https://dadata.ru/api/suggest/
