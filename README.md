@@ -55,6 +55,23 @@ config: DaDataConfig = {
   };
 ```
 
+also you may add additional options to constraint search (for example cities only):
+
+```typescript
+import { DaDataConfig } from '@kolkov/ngx-dadata';
+
+...
+
+config: DaDataConfig = {
+    apiKey: 'your_api_key',
+    type: DaDataType.address
+    options: {
+      from_bound: {value: "city"},
+      to_bound: {value: "city"}
+    }
+  };
+```
+
 For `ngModel` to work, you must import `FormsModule` from `@angular/forms`, or for `formControlName`, you must import `ReactiveFormsModule` from `@angular/forms`
 
 [npm]: https://www.npmjs.com/
