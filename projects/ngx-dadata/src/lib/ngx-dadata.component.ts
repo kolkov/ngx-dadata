@@ -20,12 +20,6 @@ import {DadataSuggestion} from './models/suggestion';
 import {DadataConfig, DadataConfigDefault} from './dadata-config';
 import {ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR} from '@angular/forms';
 
-const NGX_DADATA_VALUE_ACCESSOR = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => NgxDadataComponent),
-  multi: true
-};
-
 /*const NGX_DADATA_VALIDATOR = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => NgxDadataComponent),
@@ -49,7 +43,12 @@ export function createDaDataValidator(value) {
   selector: 'ngx-dadata',
   templateUrl: './ngx-dadata.component.html',
   styleUrls: ['./ngx-dadata.component.scss'],
-  providers: [NGX_DADATA_VALUE_ACCESSOR, /*NGX_DADATA_VALIDATOR*/]
+  providers: [
+    {
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => NgxDadataComponent),
+    multi: true
+  }, /*NGX_DADATA_VALIDATOR*/]
 })
 export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChanges {
   private v: any = '';
@@ -78,7 +77,7 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
   propagateChange: any = () => {};
   validateFn: any = () => {};
 
-  constructor(private dataService: NgxDadataService, private _r: Renderer2) {
+  constructor(private dataService: NgxDadataService, private r: Renderer2) {
   }
 
   get value(): any {
@@ -171,13 +170,13 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
 
   setFocus(id: number) {
     const activeEl = document.getElementById(id + 'item');
-    this._r.addClass(activeEl, 'active');
+    this.r.addClass(activeEl, 'active');
   }
 
   removeFocus(id: number) {
     if (id !== -1) {
       const activeEl = document.getElementById(id + 'item');
-      this._r.removeClass(activeEl, 'active');
+      this.r.removeClass(activeEl, 'active');
     }
   }
 
@@ -212,7 +211,7 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
   /**
    * Implements disabled state for this element
    *
-   * @param isDisabled
+   * @param isDisabled Disabled state flag
    */
   setDisabledState(isDisabled: boolean): void {
     alert('disabled!');

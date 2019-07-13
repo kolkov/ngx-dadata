@@ -138,7 +138,7 @@ export interface DadataParty {
   phones: string | null;
   emails: string | null;
   ogrn_date: number | null;
-  okved_type: string | null
+  okved_type: string | null;
 }
 
 export interface DadataBank {
