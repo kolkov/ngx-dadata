@@ -7,7 +7,6 @@ export interface DaDataConfig {
   limit?: number;
   width?: 'auto' | string,
   minWidth?: '0' | string,
-  options?: any,
 }
 
 export const DaDataConfigDefault: DaDataConfig = {
@@ -17,5 +16,5 @@ export const DaDataConfigDefault: DaDataConfig = {
   limit: 10,
   width: 'auto',
   minWidth: '0',
-  options: null,
+
 };

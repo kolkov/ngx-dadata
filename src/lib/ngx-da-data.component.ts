@@ -62,7 +62,6 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor, OnChang
   @Input() apiKey: string;
   @Input() disabled = null;
   @Input() type = DaDataType.address;
-  @Input() options = null;
   @Input() limit = DaDataConfigDefault.limit;
   @Input() placeholder = '';
 
@@ -98,12 +97,11 @@ export class NgxDaDataComponent implements OnInit, ControlValueAccessor, OnChang
     /*this.validateFn = createDaDataValidator(this._value);
     this.propagateChange(this._value);*/
     this.type = this.config.type;
-    this.options = this.config.options;
     this.dataService.setApiKey(this.apiKey ? this.apiKey : this.config.apiKey);
     this.inputString$.pipe(
       debounce(() => timer(this.config.delay ? this.config.delay : 500)),
     ).subscribe(x => {
-      this.dataService.getData(x, this.type, this.limit, this.options).subscribe((y: DaDataResponse) => {
+      this.dataService.getData(x, this.type, this.limit).subscribe((y: DaDataResponse) => {
         this.data = y.suggestions;
       });
     });

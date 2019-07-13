@@ -23,7 +23,7 @@ export class NgxDaDataService {
     this.apiKey = key;
   }
 
-  getData(value: string, type: DaDataType = DaDataType.address, count: number = 10, options: any = null): Observable<DaDataResponse>{
+  getData(value: string, type: DaDataType = DaDataType.address, count: number = 10): Observable<DaDataResponse>{
     const httpOptions = {
       headers: new HttpHeaders({
         'Accept': 'application/json',
@@ -31,7 +31,7 @@ export class NgxDaDataService {
         'Authorization': 'Token ' + this.apiKey,
       })
     };
-    const body = Object.assign({ query: value, count: count }, options);
+    const body = { query: value, count: count };
     return this.http.post<DaDataResponse>("https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/" + type, body, httpOptions)
   }
 }
