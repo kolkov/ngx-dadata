@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/kolkov/ngx-dadata/branch/master/graph/badge.svg)](https://codecov.io/gh/kolkov/ngx-dadata)
 
 # ngx-dadata
-Angular 6+ [DaData][dadata] suggestion (подсказки) implementation
+Angular 6+ [Dadata][dadata] suggestion (подсказки) implementation
 
 ## Getting Started
 
@@ -28,23 +28,23 @@ Import `ngx-dadata` module
 ```typescript
 import { HttpClientModule } from '@angular/common/http';
 ...
-import { NgxDaDataModule } from '@kolkov/ngx-dadata';
+import { NgxDadataModule } from '@kolkov/ngx-dadata';
 
 @NgModule({
-  imports: [ HttpClientModule, NgxDaDataModule ]
+  imports: [ HttpClientModule, NgxDadataModule ]
 })
 ```
 
 Then in HTML
 
 ```html
-<ngx-da-data [config]="config" [(ngModel)]="currentAddress"></ngx-da-data>
+<ngx-dadata [config]="config" [(ngModel)]="currentAddress"></ngx-dadata>
 ```
 
 or
 
 ```html
-<ngx-da-data formControlName="currentAddress" [config]="config"></ngx-da-data>
+<ngx-dadata formControlName="currentAddress" [config]="config"></ngx-dadata>
 ```
 
 where
@@ -56,7 +56,7 @@ import { DadataConfig } from '@kolkov/ngx-dadata';
 
 config: DadataConfig = {
     apiKey: 'your_api_key',
-    type: DaDataType.address
+    type: DadataType.address
   };
 ```
 
