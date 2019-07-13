@@ -1,10 +1,11 @@
+# ngx-dadata
 [![npm version](https://badge.fury.io/js/%40kolkov%2Fngx-dadata.svg)](https://badge.fury.io/js/%40kolkov%2Fngx-dadata)
 [![Build Status](https://travis-ci.org/kolkov/ngx-dadata.svg?branch=master)](https://travis-ci.org/kolkov/ngx-dadata)
 [![Coverage Status](https://coveralls.io/repos/github/kolkov/ngx-dadata/badge.svg?branch=master)](https://coveralls.io/github/kolkov/ngx-dadata?branch=master)
 [![codecov](https://codecov.io/gh/kolkov/ngx-dadata/branch/master/graph/badge.svg)](https://codecov.io/gh/kolkov/ngx-dadata)
 
-# ngx-dadata
 Angular 6+ [Dadata][dadata] suggestion (подсказки) implementation
+
 
 ## Getting Started
 
