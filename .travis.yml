@@ -19,11 +19,14 @@ before_script:
   - npm install -g @angular/cli
   - npm install -g codecov
 script:
-  - npm run lint
+  - npm run lint:lib
   - npm run test-ci
   - codecov
   - npm run build:lib
 before_deploy:
+  - npm run copy:readme
+  - npm run copy:changelog
+  - npm run copy:license
   - cd dist/kolkov/ngx-dadata
 deploy:
   provider: npm
