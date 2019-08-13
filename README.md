@@ -45,7 +45,7 @@ Then in HTML
 or
 
 ```html
-<ngx-dadata formControlName="currentAddress" [config]="config"></ngx-dadata>
+<ngx-dadata formControlName="currentAddress" [config]="config" (selected)="onAddressSelected($event)"></ngx-dadata>
 ```
 
 where
@@ -59,6 +59,11 @@ config: DadataConfig = {
     apiKey: 'your_api_key',
     type: DadataType.address
   };
+
+onAddressSelect(event: DadataSuggestion) {
+    const addressData = event.data as DadataAddress;
+    console.log(addressData);
+  }
 ```
 
 For `ngModel` to work, you must import `FormsModule` from `@angular/forms`, or for `formControlName`, you must import `ReactiveFormsModule` from `@angular/forms`
