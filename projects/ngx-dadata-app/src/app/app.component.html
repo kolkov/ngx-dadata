@@ -15,6 +15,11 @@
       <label for="fio">Enter FIO: </label>
       <ngx-dadata [config]="configFio" id="fio"></ngx-dadata>
     </div>
+    <br>
+    <div>
+      <label for="party">Enter Party: </label>
+      <ngx-dadata [config]="configParty" id="party" (selected)="onPartySelect($event)"></ngx-dadata>
+    </div>
   </div>
   <p>
     NPM package is here:

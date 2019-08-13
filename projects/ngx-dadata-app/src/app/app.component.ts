@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DadataConfig, DadataType} from '@kolkov/ngx-dadata';
+import {DadataConfig, DadataParty, DadataSuggestion, DadataType} from '@kolkov/ngx-dadata';
 
 @Component({
   selector: 'app-root',
@@ -15,4 +15,13 @@ export class AppComponent  {
     apiKey: '2e51c5fbc1a60bd48face95951108560bf03f7d9',
     type: DadataType.fio,
   };
+  configParty: DadataConfig = {
+    apiKey: '2e51c5fbc1a60bd48face95951108560bf03f7d9',
+    type: DadataType.party,
+  };
+
+  onPartySelect(event: DadataSuggestion) {
+    const partyData = event.data as DadataParty;
+    console.log(partyData);
+  }
 }
