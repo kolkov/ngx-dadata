@@ -1,5 +1,4 @@
 <div class="autocomplete">
-  <!--<label for="address_input"></label>-->
   <input [disabled]="disabled  ? true : null" type="text" name="address" class="search" #inputValue (input)="getData(inputValue.value)"
          [placeholder]="placeholder" (keyup.ArrowDown)="onArrowDown()" (keyup.ArrowUp)="onArrowUp()"
          (keyup.Enter)="onEnter()" spellcheck="false" [(ngModel)]="value" autocomplete="new-password" />
