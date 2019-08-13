@@ -7,6 +7,10 @@
     <div class="autocomplete-items">
       <div class="autocomplele-item" *ngFor="let item of data; let i = index" (click)="onClick($event, item)" [id]="i+'item'">
         {{item.value}}
+        <ng-template [ngIf]="type==='party'">
+          <br/>
+          <span>{{item.data?.inn}} {{config.partyAddress === 'full' ? item.data?.address?.value : item.data?.address?.data?.city}}</span>
+        </ng-template>
       </div>
     </div>
   </div>

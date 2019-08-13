@@ -18,6 +18,7 @@ export class AppComponent  {
   configParty: DadataConfig = {
     apiKey: '2e51c5fbc1a60bd48face95951108560bf03f7d9',
     type: DadataType.party,
+    partyAddress: 'full',
   };
 
   onPartySelect(event: DadataSuggestion) {

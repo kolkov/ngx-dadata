@@ -7,6 +7,7 @@ export interface DadataConfig {
   limit?: number;
   width?: 'auto' | string;
   minWidth?: '0' | string;
+  partyAddress?: 'city' | 'full';
 }
 
 export const DadataConfigDefault: DadataConfig = {
@@ -16,5 +17,5 @@ export const DadataConfigDefault: DadataConfig = {
   limit: 10,
   width: 'auto',
   minWidth: '0',
-
+  partyAddress: 'city',
 };
