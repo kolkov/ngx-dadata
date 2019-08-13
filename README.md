@@ -60,7 +60,7 @@ config: DadataConfig = {
     type: DadataType.address
   };
 
-onAddressSelect(event: DadataSuggestion) {
+onAddressSelected(event: DadataSuggestion) {
     const addressData = event.data as DadataAddress;
     console.log(addressData);
   }
