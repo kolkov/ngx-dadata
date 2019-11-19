@@ -62,6 +62,7 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
   @Input() type = DadataType.address;
   @Input() limit = DadataConfigDefault.limit;
   @Input() placeholder = '';
+  @Input() locations = null;
 
   @Output() selectedSuggestion: DadataSuggestion;
   @Output() selected: EventEmitter<DadataSuggestion> = new EventEmitter<DadataSuggestion>();
@@ -95,11 +96,12 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
     /*this.validateFn = createDaDataValidator(this._value);
     this.propagateChange(this._value);*/
     this.type = this.config.type;
+    this.locations = this.config.locations;
     this.dataService.setApiKey(this.apiKey ? this.apiKey : this.config.apiKey);
     this.inputString$.pipe(
       debounce(() => timer(this.config.delay ? this.config.delay : 500)),
     ).subscribe(x => {
-      this.dataService.getData(x, this.type, this.limit).subscribe((y: DadataResponse) => {
+      this.dataService.getData(x, this.type, this.limit, this.locations).subscribe((y: DadataResponse) => {
         this.data = y.suggestions;
       });
     });

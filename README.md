@@ -68,6 +68,23 @@ onAddressSelected(event: DadataSuggestion) {
 
 For `ngModel` to work, you must import `FormsModule` from `@angular/forms`, or for `formControlName`, you must import `ReactiveFormsModule` from `@angular/forms`
 
+also you may add additional options to constraint search (for example cities only):
+
+ ```typescript
+import { DaDataConfig } from '@kolkov/ngx-dadata';
+ ...
+ config: DaDataConfig = {
+    apiKey: 'your_api_key',
+    type: DaDataType.address,
+    locations: [
+        {
+            region: 'Самарская',
+            city: 'Тольятти',
+        }        
+    ]     
+  };
+```
+
 ## What's included
 
 Within the download you'll find the following directories and files. You'll see something like this:
