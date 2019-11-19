@@ -5,9 +5,6 @@ dist: trusty
 sudo: required
 addons:
   chrome: stable
-branches:
-  only:
-    - master
 cache:
   directories:
     - node_modules
@@ -27,7 +24,7 @@ before_deploy:
   - npm run copy:readme
   - npm run copy:changelog
   - npm run copy:license
-  - cd dist/kolkov/ngx-dadata
+  - cd dist/ngx-dadata
 deploy:
   provider: npm
   email: a.kolkov@gmail.com
