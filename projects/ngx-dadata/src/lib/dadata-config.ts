@@ -31,6 +31,9 @@ export interface DadataConfig {
   partyAddress?: 'city' | 'full';
   locations?: Locations[];
   restrict_value?: boolean;
+  hint?: boolean;
+  bounds?: string;
+  constraints?: any;
 }
 
 export const DadataConfigDefault: DadataConfig = {
