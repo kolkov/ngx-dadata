@@ -19,6 +19,11 @@
           "options": {
             "tsConfig": "projects/ngx-dadata/tsconfig.lib.json",
             "project": "projects/ngx-dadata/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-dadata/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {
@@ -62,7 +67,7 @@
             "main": "projects/ngx-dadata-app/src/main.ts",
             "polyfills": "projects/ngx-dadata-app/src/polyfills.ts",
             "tsConfig": "projects/ngx-dadata-app/tsconfig.app.json",
-            "aot": false,
+            "aot": true,
             "assets": [
               "projects/ngx-dadata-app/src/favicon.ico",
               "projects/ngx-dadata-app/src/assets"
@@ -85,7 +90,6 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -94,6 +98,10 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ]
             }
@@ -161,5 +169,8 @@
       }
     }
   },
-  "defaultProject": "ngx-dadata-app"
+  "defaultProject": "ngx-dadata-app",
+  "cli": {
+    "analytics": "325ac4a0-1098-4d39-bc46-efee81d4c767"
+  }
 }
