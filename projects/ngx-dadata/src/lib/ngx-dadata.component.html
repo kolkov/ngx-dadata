@@ -1,7 +1,7 @@
 <div class="autocomplete">
-  <input [disabled]="disabled  ? true : null" type="text" name="address" class="search" #inputValue (input)="getData(inputValue.value)"
+  <input [disabled]="disabled  ? true : null" type="text" class="search" #inputValue (input)="getData(inputValue.value)"
          [placeholder]="placeholder" (keyup.ArrowDown)="onArrowDown()" (keyup.ArrowUp)="onArrowUp()"
-         (keyup.Enter)="onEnter()" spellcheck="false" [(ngModel)]="value" autocomplete="new-password" />
+         (keyup.Enter)="onEnter($event)" spellcheck="false" [(ngModel)]="value" autocomplete="off" />
   <div *ngIf="data.length">
     <div class="autocomplete-items">
       <div class="autocomplele-item" *ngFor="let item of data; let i = index" (click)="onClick($event, item)" [id]="i+'item'">

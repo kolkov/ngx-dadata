@@ -39,6 +39,12 @@ export function createDaDataValidator(value) {
   };
 }
 
+/**
+ * Autocomplete IDs need to be unique across components, so this counter exists outside of
+ * the component definition.
+ */
+let uniqueDadataIdCounter = 0;
+
 @Component({
   selector: 'ngx-dadata',
   templateUrl: './ngx-dadata.component.html',
@@ -53,6 +59,8 @@ export function createDaDataValidator(value) {
 export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChanges {
   private v: any = '';
   currentFocus = -1;
+
+  opened = false;
 
   data: DadataSuggestion[] = [];
 
@@ -73,12 +81,18 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
 
   private inputString$ = new Subject<string>();
 
+  /** Unique ID to be used by autocomplete trigger's "aria-owns" property. */
+  id = `ngx-dadata-${uniqueDadataIdCounter++}`;
+
   // onSuggestionSelected = (value: string) => {};
   onTouched = () => {};
   propagateChange: any = () => {};
   validateFn: any = () => {};
 
-  constructor(private dataService: NgxDadataService, private r: Renderer2) {
+  constructor(
+    private dataService: NgxDadataService,
+    private r: Renderer2,
+    private elRef: ElementRef) {
   }
 
   get value(): any {
@@ -101,15 +115,19 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
     this.inputString$.pipe(
       debounce(() => timer(this.config.delay ? this.config.delay : 500)),
     ).subscribe(x => {
-      this.dataService.getData(x, this.type, this.limit, this.locations).subscribe((y: DadataResponse) => {
+      this.dataService.getData(x, this.type, this.config)
+        .subscribe((y: DadataResponse) => {
         this.data = y.suggestions;
+        if (this.data.length) {
+          this.opened = true;
+        }
       });
     });
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.value) {
-
+      // console.log('ngOnChanges');
     }
   }
 
@@ -119,23 +137,27 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
   }
 
   onClick(e: MouseEvent, item: DadataSuggestion) {
-    // e.preventDefault();
     this.inputValue.nativeElement.value = item.value;
     this.propagateChange(item.value);
     this.inputValue.nativeElement.focus();
     this.selectedSuggestion = item;
     this.data = [];
     this.currentFocus = -1;
-
-    // this.writeValue(item.value);
+    this.opened = false;
     this.selected.emit(item);
     // this.selectedData.emit(item.data);
     // this.selectedString.emit(item.value);
   }
 
-  @HostListener('document:click')
-  onOutsideClick() {
-    this.data = [];
+  @HostListener('document:click', ['$event'])
+  onOutsideClick($event: MouseEvent) {
+    if (!this.opened) {
+      return;
+    }
+    if (!this.elRef.nativeElement.contains($event.target)) {
+      this.data = [];
+      this.opened = false;
+    }
   }
 
   onArrowDown() {
@@ -158,13 +180,12 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
     this.setFocus(this.currentFocus);
   }
 
-  onEnter() {
+  onEnter(event: KeyboardEvent) {
     this.selectedSuggestion = this.data[this.currentFocus];
     this.inputValue.nativeElement.value = this.selectedSuggestion.value;
     this.data = [];
     this.currentFocus = -1;
     this.propagateChange(this.selectedSuggestion.value);
-    // this.writeValue(this.selectedSuggestion.value);
     this.selected.emit(this.selectedSuggestion);
     // this.selectedData.emit(this.selectedSuggestion.data);
     // this.selectedString.emit(this.selectedSuggestion.value);
@@ -185,8 +206,10 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
   writeValue(value: any): void {
     if (value !== undefined) {
       this.v = value;
+    } else {
+      this.v = '';
     }
-    // this.onSuggestionSelected(value);
+    this.r.setProperty(this.inputValue.nativeElement, 'innerHTML', this.v);
   }
 
   /**
