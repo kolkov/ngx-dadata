@@ -15,7 +15,7 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/ngx-dadata/tsconfig.lib.json",
             "project": "projects/ngx-dadata/ng-package.json"
@@ -67,7 +67,6 @@
             "main": "projects/ngx-dadata-app/src/main.ts",
             "polyfills": "projects/ngx-dadata-app/src/polyfills.ts",
             "tsConfig": "projects/ngx-dadata-app/tsconfig.app.json",
-            "aot": true,
             "assets": [
               "projects/ngx-dadata-app/src/favicon.ico",
               "projects/ngx-dadata-app/src/assets"
@@ -75,7 +74,13 @@
             "styles": [
               "projects/ngx-dadata-app/src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -88,7 +93,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
