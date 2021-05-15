@@ -41,6 +41,7 @@ export interface DadataConfig {
   locations?: Location[];
   locationsBoost?: Location[];
   bounds?: Bounds;
+  restrict_value?: boolean
 }
 
 export const DadataConfigDefault: DadataConfig = {
