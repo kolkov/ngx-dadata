@@ -77,7 +77,7 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
   // @Output() selectedData = new EventEmitter<DaDataAddress | DaDataFIO | DaDataBank | DaDataParty | DaDataEmail>();
   // @Output() selectedString = new EventEmitter<string>();
 
-  @ViewChild('inputValue', {static: true}) inputValue: ElementRef;
+  @ViewChild('inputValue', { static: true }) inputValue: ElementRef;
 
   private inputString$ = new Subject<string>();
 
