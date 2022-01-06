@@ -35,14 +35,11 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "projects/ngx-dadata/tsconfig.lib.json",
-              "projects/ngx-dadata/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "projects/ngx-dadata/**/*.ts",
+              "projects/ngx-dadata/**/*.html"
             ]
           }
         }
@@ -145,19 +142,6 @@
             "scripts": []
           }
         },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/ngx-dadata-app/tsconfig.app.json",
-              "projects/ngx-dadata-app/tsconfig.spec.json",
-              "projects/ngx-dadata-app/e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        },
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
@@ -175,6 +159,7 @@
   },
   "defaultProject": "ngx-dadata-app",
   "cli": {
-    "analytics": "325ac4a0-1098-4d39-bc46-efee81d4c767"
+    "analytics": "325ac4a0-1098-4d39-bc46-efee81d4c767",
+    "defaultCollection": "@angular-eslint/schematics"
   }
 }

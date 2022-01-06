@@ -25,7 +25,7 @@ export class NgxDadataService {
     this.apiKey = key;
   }
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   getData(value: string, type: DadataType = DadataType.address, config: DadataConfig): Observable<DadataResponse> {
     const httpOptions = {
       headers: new HttpHeaders({

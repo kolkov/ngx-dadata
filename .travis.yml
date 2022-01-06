@@ -19,6 +19,8 @@ script:
   - npm run test-ci
   - codecov
   - npm run build:lib
+after_script:
+  - cat ./coverage/ngx-dadata/lcov.info | coveralls
 before_deploy:
   - npm run copy:readme
   - npm run copy:changelog
