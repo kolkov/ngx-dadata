@@ -1,17 +1,17 @@
 {
   "name": "@kolkov/ngx-dadata",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "author": "Andrey Kolkov <a.kolkov@gmail.com>",
   "repository": "https://github.com/kolkov/ngx-dadata",
   "license": "MIT",
   "private": false,
-  "description": "Angular 6+ Dadata suggestion (подсказки) implementation",
+  "description": "Angular 6+ and 13+ Dadata suggestion (подсказки) implementation",
   "peerDependencies": {
-    "@angular/common": ">6.0.0",
-    "@angular/core": ">6.0.0"
+    "@angular/common": ">=13",
+    "@angular/core": ">=13"
   },
   "dependencies": {
-    "tslib": "^2.0.0"
+    "tslib": "^2.3.0"
   },
   "keywords": [
     "angular",
