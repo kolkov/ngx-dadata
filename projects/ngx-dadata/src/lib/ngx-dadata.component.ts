@@ -182,6 +182,9 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
 
   onEnter(event: KeyboardEvent) {
     this.selectedSuggestion = this.data[this.currentFocus];
+    if (!this.selectedSuggestion) {
+      return;
+    }
     this.inputValue.nativeElement.value = this.selectedSuggestion.value;
     this.data = [];
     this.currentFocus = -1;
@@ -193,12 +196,18 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
 
   setFocus(id: number) {
     const activeEl = document.getElementById(id + 'item');
+    if (!activeEl) {
+      return;
+    }
     this.r.addClass(activeEl, 'active');
   }
 
   removeFocus(id: number) {
     if (id !== -1) {
       const activeEl = document.getElementById(id + 'item');
+      if (!activeEl) {
+        return;
+      }
       this.r.removeClass(activeEl, 'active');
     }
   }
