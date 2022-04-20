@@ -208,7 +208,7 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
   }
 
   writeValue(value: any): void {
-    if (value !== undefined) {
+    if (value !== undefined && value !== null) {
       this.v = value;
     } else {
       this.v = '';
