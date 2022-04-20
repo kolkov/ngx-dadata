@@ -3,7 +3,7 @@ import {
   ElementRef,
   EventEmitter,
   forwardRef,
-  HostListener,
+  HostListener, Inject,
   Input,
   OnChanges,
   OnInit,
@@ -19,6 +19,8 @@ import {DadataResponse} from './models/dadata-response';
 import {DadataSuggestion} from './models/suggestion';
 import {DadataConfig, DadataConfigDefault} from './dadata-config';
 import {ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {DOCUMENT} from '@angular/common';
+import {unwrapHtmlForSink} from 'safevalues';
 
 /*const NGX_DADATA_VALIDATOR = {
   provide: NG_VALIDATORS,
@@ -92,7 +94,9 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
   constructor(
     private dataService: NgxDadataService,
     private r: Renderer2,
-    private elRef: ElementRef) {
+    private elRef: ElementRef,
+    @Inject(DOCUMENT) private document: Document,
+    ) {
   }
 
   get value(): any {
@@ -192,13 +196,13 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
   }
 
   setFocus(id: number) {
-    const activeEl = document.getElementById(id + 'item');
+    const activeEl = this.document.getElementById(id + 'item');
     this.r.addClass(activeEl, 'active');
   }
 
   removeFocus(id: number) {
     if (id !== -1) {
-      const activeEl = document.getElementById(id + 'item');
+      const activeEl = this.document.getElementById(id + 'item');
       this.r.removeClass(activeEl, 'active');
     }
   }
@@ -209,7 +213,7 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
     } else {
       this.v = '';
     }
-    this.r.setProperty(this.inputValue.nativeElement, 'innerHTML', this.v);
+    this.r.setProperty(this.inputValue.nativeElement, 'innerHTML', unwrapHtmlForSink(this.v));
   }
 
   /**
