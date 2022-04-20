@@ -21,7 +21,6 @@ import {DadataConfig, DadataConfigDefault} from './dadata-config';
 import {ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {DOCUMENT} from '@angular/common';
 import {unwrapHtmlForSink} from 'safevalues';
-import {DomSanitizer} from '@angular/platform-browser';
 import {createHtml} from 'safevalues/implementation/html_impl';
 
 /*const NGX_DADATA_VALIDATOR = {
@@ -97,7 +96,6 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
     private dataService: NgxDadataService,
     private r: Renderer2,
     private elRef: ElementRef,
-    private domSanitizer: DomSanitizer,
     @Inject(DOCUMENT) private document: Document,
     ) {
   }
