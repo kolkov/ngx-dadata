@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {DadataResponse} from './models/dadata-response';
-import {Bounds, DadataConfig, Location} from './dadata-config';
+import {DadataConfig} from './dadata-config';
 
 export enum DadataType {
   fio = 'fio',
@@ -38,8 +38,8 @@ export class NgxDadataService {
       {},
       {query: value},
       {count: config?.limit},
-      {location: config?.locations},
-      {location_bust: config?.locationsBoost},
+      {locations: config?.locations},
+      {location_boost: config?.locationsBoost},
       {from_bound: config?.bounds?.fromBound},
       {to_bound: config?.bounds?.toBound}
     );
