@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {DadataConfig, DadataParty, DadataSuggestion, DadataType} from '@kolkov/ngx-dadata';
+import { DadataConfig, DadataParty, DadataSuggestion, DadataType } from 'projects/ngx-dadata/src/public-api';
 
 @Component({
   selector: 'app-root',
