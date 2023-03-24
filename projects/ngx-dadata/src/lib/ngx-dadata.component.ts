@@ -245,7 +245,6 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
    * @param isDisabled Disabled state flag
    */
   setDisabledState(isDisabled: boolean): void {
-    alert('disabled!');
     this.disabled = isDisabled;
   }
 }
