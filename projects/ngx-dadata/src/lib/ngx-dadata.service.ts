@@ -38,10 +38,11 @@ export class NgxDadataService {
       {},
       {query: value},
       {count: config?.limit},
-      {location: config?.locations},
-      {location_bust: config?.locationsBoost},
+      {locations: config?.locations},
+      {location_boost: config?.locationsBoost},
       {from_bound: config?.bounds?.fromBound},
-      {to_bound: config?.bounds?.toBound}
+      {to_bound: config?.bounds?.toBound},
+      {restrict_value: config?.restrict_value?}
     );
     return this.http.post<DadataResponse>('https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/' + type, body, httpOptions);
   }
