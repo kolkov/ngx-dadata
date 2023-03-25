@@ -43,6 +43,6 @@ export class NgxDadataService {
       {from_bound: config?.bounds?.fromBound},
       {to_bound: config?.bounds?.toBound}
     );
-    return this.http.post<DadataResponse>('https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/' + type, body, httpOptions);
+    return this.http.post<DadataResponse>(config.url + type, body, httpOptions);
   }
 }

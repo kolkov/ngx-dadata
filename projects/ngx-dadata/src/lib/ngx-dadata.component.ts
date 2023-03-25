@@ -69,6 +69,7 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChang
 
   @Input() config: DadataConfig = DadataConfigDefault;
   @Input() apiKey: string;
+  @Input() url: string = DadataConfigDefault.url;
   @Input() disabled = null;
   @Input() type = DadataType.address;
   @Input() limit = DadataConfigDefault.limit;

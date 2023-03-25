@@ -32,6 +32,7 @@ export interface Bounds {
 
 export interface DadataConfig {
   apiKey: string;
+  url?: string;
   type?: DadataType;
   delay?: number;
   limit?: number;
@@ -45,6 +46,7 @@ export interface DadataConfig {
 
 export const DadataConfigDefault: DadataConfig = {
   apiKey: '',
+  url: 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/',
   type: DadataType.address,
   delay: 500,
   limit: 10,
