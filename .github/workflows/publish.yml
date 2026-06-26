@@ -38,6 +38,4 @@ jobs:
           fi
       - name: Publish
         working-directory: dist/ngx-dadata
-        run: npm publish --access public --tag ${{ steps.tag.outputs.dist_tag }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance --tag ${{ steps.tag.outputs.dist_tag }}
