@@ -5,6 +5,7 @@ export { DadataConfigDefault } from './lib/dadata-config';
 export type {
   DadataConfig,
   DadataLocation,
+  DadataLocationGeo,
   DadataBound,
   DadataBounds,
 } from './lib/dadata-config';
