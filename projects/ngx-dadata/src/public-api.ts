@@ -16,7 +16,11 @@ export type { DadataResponse, DadataIplocateResponse } from './lib/models/dadata
 export type {
   DadataFIO,
   DadataAddress,
+  DadataMetro,
   DadataParty,
+  DadataFinance,
+  DadataPartyRef,
   DadataBank,
   DadataEmail,
+  DadataCountry,
 } from './lib/models/data';

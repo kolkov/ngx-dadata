@@ -93,6 +93,33 @@ describe('NgxDadataService', () => {
     req.flush(makeResponse([]));
   });
 
+  it('should send POST to the correct URL for country type', () => {
+    const config: DadataConfig = { ...baseConfig, type: DadataType.country };
+    service.getSuggestions('Russia', config).subscribe();
+
+    const req = httpMock.expectOne(API_BASE + 'country');
+    expect(req.request.method).toBe('POST');
+    req.flush(makeResponse([]));
+  });
+
+  it('should send POST to the correct URL for metro type', () => {
+    const config: DadataConfig = { ...baseConfig, type: DadataType.metro };
+    service.getSuggestions('Arbat', config).subscribe();
+
+    const req = httpMock.expectOne(API_BASE + 'metro');
+    expect(req.request.method).toBe('POST');
+    req.flush(makeResponse([]));
+  });
+
+  it('should send POST to the correct URL for fias type', () => {
+    const config: DadataConfig = { ...baseConfig, type: DadataType.fias };
+    service.getSuggestions('Moscow', config).subscribe();
+
+    const req = httpMock.expectOne(API_BASE + 'fias');
+    expect(req.request.method).toBe('POST');
+    req.flush(makeResponse([]));
+  });
+
   it('should default to address type when config.type is undefined', () => {
     const config: DadataConfig = { apiKey: 'test-token' };
     service.getSuggestions('test', config).subscribe();

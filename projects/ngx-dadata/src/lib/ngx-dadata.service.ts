@@ -7,11 +7,33 @@ import { DadataSuggestion } from './models/suggestion';
 import { DadataConfig, GeolocateOptions, IplocateOptions } from './dadata-config';
 
 export enum DadataType {
-  fio = 'fio',
+  // Primary suggestion types
   address = 'address',
+  fio = 'fio',
   party = 'party',
   bank = 'bank',
   email = 'email',
+  fias = 'fias',
+  country = 'country',
+  postal_unit = 'postal_unit',
+  // International
+  party_by = 'party_by',
+  party_kz = 'party_kz',
+  // Reference/classifiers
+  currency = 'currency',
+  okved2 = 'okved2',
+  okpd2 = 'okpd2',
+  oktmo = 'oktmo',
+  mktu = 'mktu',
+  metro = 'metro',
+  fms_unit = 'fms_unit',
+  fns_unit = 'fns_unit',
+  fts_unit = 'fts_unit',
+  court = 'court',
+  car_brand = 'car_brand',
+  okpdtr_profession = 'okpdtr_profession',
+  okpdtr_position = 'okpdtr_position',
+  medical_position = 'medical_position',
 }
 
 const API_BASE = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/';
