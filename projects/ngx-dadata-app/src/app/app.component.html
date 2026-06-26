@@ -1,31 +1,80 @@
-<div class="container">
-  <header class="header">
+<div class="demo">
+  <header class="demo-header">
     <h1>ngx-dadata</h1>
-    <p>
-      DaData suggestion (подсказки) service implementation for Angular 6+
-    </p>
+    <p class="demo-subtitle">Angular component for <a href="https://dadata.ru" target="_blank" rel="noopener">Dadata.ru</a> suggestions API</p>
+    <div class="demo-links">
+      <a href="https://www.npmjs.com/package/@kolkov/ngx-dadata" target="_blank" rel="noopener">npm</a>
+      <span class="demo-links-sep">&middot;</span>
+      <a href="https://github.com/kolkov/ngx-dadata" target="_blank" rel="noopener">GitHub</a>
+    </div>
   </header>
-  <div class="dadata-example">
-    <div>
-      <label for="address">Enter address: </label>
-      <ngx-dadata [config]="configAddress" id="address"></ngx-dadata>
-    </div>
-    <br>
-    <div>
-      <label for="fio">Enter FIO: </label>
-      <ngx-dadata [config]="configFio" id="fio"></ngx-dadata>
-    </div>
-    <br>
-    <div>
-      <label for="party">Enter Party: </label>
-      <ngx-dadata [config]="configParty" id="party" (selected)="onPartySelect($event)"></ngx-dadata>
-    </div>
-  </div>
-  <p>
-    NPM package is here:
-    <a href="https://www.npmjs.com/package/@kolkov/ngx-dadata">https://www.npmjs.com/package/@kolkov/ngx-dadata</a>
-  </p>
-  GitHub repo is here:
-  <a href="https://github.com/kolkov/ngx-dadata">https://github.com/kolkov/ngx-dadata</a>
-</div>
 
+  <section class="demo-section demo-api-key">
+    <h2>API Key</h2>
+    <p class="demo-hint">Enter your <a href="https://dadata.ru/profile/#info" target="_blank" rel="noopener">Dadata API key</a> to try the examples below.</p>
+    <input
+      type="password"
+      class="demo-input"
+      placeholder="Your Dadata API key"
+      [ngModel]="apiKey"
+      (ngModelChange)="onApiKeyChange($event)" />
+  </section>
+
+  <section class="demo-section">
+    <h2>Address</h2>
+    <p class="demo-hint">Filtered by city: Moscow</p>
+    <ngx-dadata
+      [config]="configAddress"
+      [(ngModel)]="addressValue"
+      placeholder="Start typing an address..."
+      (selected)="onSelected($event)">
+    </ngx-dadata>
+    @if (addressValue) {
+      <p class="demo-bound-value">ngModel value: <code>{{ addressValue }}</code></p>
+    }
+  </section>
+
+  <section class="demo-section">
+    <h2>FIO (Name)</h2>
+    <ngx-dadata
+      [config]="configFio"
+      placeholder="Last name, first name, patronymic..."
+      (selected)="onSelected($event)">
+    </ngx-dadata>
+  </section>
+
+  <section class="demo-section">
+    <h2>Party (Organization)</h2>
+    <p class="demo-hint">Shows INN and full address</p>
+    <ngx-dadata
+      [config]="configParty"
+      placeholder="Company name or INN..."
+      (selected)="onSelected($event)">
+    </ngx-dadata>
+  </section>
+
+  <section class="demo-section">
+    <h2>Bank</h2>
+    <ngx-dadata
+      [config]="configBank"
+      placeholder="Bank name or BIC..."
+      (selected)="onSelected($event)">
+    </ngx-dadata>
+  </section>
+
+  <section class="demo-section">
+    <h2>Email</h2>
+    <ngx-dadata
+      [config]="configEmail"
+      placeholder="Email address..."
+      (selected)="onSelected($event)">
+    </ngx-dadata>
+  </section>
+
+  @if (selectedResult) {
+    <section class="demo-section demo-result">
+      <h2>Last Selected Result</h2>
+      <pre class="demo-json">{{ selectedResult | json }}</pre>
+    </section>
+  }
+</div>

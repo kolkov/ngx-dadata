@@ -1,14 +1,141 @@
-.container {
-  max-width: 60%;
-  margin: auto;
-}
-.header {
-  margin-top: 100px;
-  text-align: center;
-  margin-bottom: 40px;
+.demo {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
 }
 
-.dadata-example {
-  border: 1px solid #EBEBEB;
-  padding: 15px;
+.demo-header {
+  text-align: center;
+  padding: 48px 0 32px;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: #1a1a1a;
+  }
+}
+
+.demo-subtitle {
+  color: #555;
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+
+  a {
+    color: #0066cc;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.demo-links {
+  font-size: 0.9rem;
+
+  a {
+    color: #0066cc;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.demo-links-sep {
+  margin: 0 6px;
+  color: #ccc;
+}
+
+.demo-section {
+  margin-bottom: 28px;
+  padding: 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  background: #fff;
+
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 12px;
+    color: #1a1a1a;
+  }
+}
+
+.demo-hint {
+  font-size: 0.85rem;
+  color: #777;
+  margin: 0 0 12px;
+
+  a {
+    color: #0066cc;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.demo-api-key {
+  background: #f7f7f7;
+  border-color: #ddd;
+}
+
+.demo-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+
+  &:focus {
+    outline: none;
+    border-color: #0066cc;
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.15);
+  }
+
+  &::placeholder {
+    color: #aaa;
+  }
+}
+
+.demo-bound-value {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  color: #555;
+
+  code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.85em;
+  }
+}
+
+.demo-result {
+  background: #fafafa;
+
+  h2 {
+    margin-bottom: 8px;
+  }
+}
+
+.demo-json {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
