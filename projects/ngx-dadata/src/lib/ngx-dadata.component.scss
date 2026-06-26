@@ -1,55 +1,68 @@
-//* { box-sizing: border-box; }
-/*body {
-  font: 16px Arial;
-}*/
-.autocomplete {
-  /*the container must be positioned relative:*/
+:host {
+  display: block;
+}
+
+.ngx-dadata {
   position: relative;
-  //display: inline-block;
 }
-input {
-  border: 0 solid transparent;
-  background-color: #f1f1f1;
-  padding: 5px;
-  //font-size: 16px;
-}
-input[type=text] {
-  background-color: #f1f1f1;
+
+.ngx-dadata-input {
+  box-sizing: border-box;
   width: 100%;
-}
-input[type=submit] {
-  background-color: DodgerBlue;
-  color: #fff;
-}
-.autocomplete-items {
-  position: absolute;
-  border: 1px solid #d4d4d4;
-  border-bottom: none;
-  border-top: none;
-  z-index: 99;
-  /*position the autocomplete items to be the same width as the container:*/
-  top: 100%;
-  left: 0;
-  right: 0;
-  .autocomplele-item {
-    padding: 5px 10px;
-    cursor: pointer;
-    background-color: #fff;
-    border-bottom: 1px solid #d4d4d4;
-    &:hover {
-      /*when hovering an item:*/
-      background-color: #e9e9e9;
-    }
-    &.active {
-      /*when navigating through the items using the arrow keys:*/
-      background-color: DodgerBlue !important;
-      color: #ffffff;
-    }
-    span {
-      color: #555555;
-      font-size: 80%;
-    }
+  padding: 8px;
+  border: 1px solid var(--ngx-dadata-border-color, #d4d4d4);
+  border-radius: var(--ngx-dadata-border-radius, 4px);
+  background-color: var(--ngx-dadata-bg, #fff);
+  font: inherit;
+
+  &:focus {
+    outline: 2px solid var(--ngx-dadata-focus-color, #4a90d9);
+    outline-offset: -1px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
+.ngx-dadata-items {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--ngx-dadata-border-color, #d4d4d4);
+  border-top: none;
+  border-radius: 0 0 var(--ngx-dadata-border-radius, 4px) var(--ngx-dadata-border-radius, 4px);
+  background-color: var(--ngx-dadata-bg, #fff);
+  max-height: 300px;
+  overflow-y: auto;
+}
 
+.ngx-dadata-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--ngx-dadata-border-color, #d4d4d4);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: var(--ngx-dadata-hover-bg, #f0f0f0);
+  }
+
+  &.active {
+    background-color: var(--ngx-dadata-active-bg, #4a90d9);
+    color: var(--ngx-dadata-active-color, #fff);
+  }
+}
+
+.ngx-dadata-detail {
+  color: var(--ngx-dadata-detail-color, #888);
+  font-size: 85%;
+}

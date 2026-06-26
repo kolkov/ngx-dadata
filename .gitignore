@@ -42,6 +42,12 @@ yarn-error.log
 testem.log
 /typings
 
+# AI settings, dev docs — private
+/.claude/
+/docs/dev/
+/tmp/
+gosh.log
+
 # System Files
 .DS_Store
 Thumbs.db

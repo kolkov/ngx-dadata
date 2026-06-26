@@ -1,6 +1,6 @@
-import {DadataType} from './ngx-dadata.service';
+import { DadataType } from './ngx-dadata.service';
 
-export interface Location {
+export interface DadataLocation {
   country?: string;
   country_iso_code?: string;
   region?: string;
@@ -21,13 +21,19 @@ export interface Location {
   street_fias_id?: string;
 }
 
-export interface Bound {
-  value: 'country' | 'region' | 'city' | 'street' | 'settlement' | 'area' | 'house';
+export interface DadataLocationGeo {
+  lat: number;
+  lon: number;
+  radius_meters: number;
 }
 
-export interface Bounds {
-  fromBound?: Bound;
-  toBound?: Bound;
+export interface DadataBound {
+  value: 'country' | 'region' | 'area' | 'city' | 'settlement' | 'street' | 'house';
+}
+
+export interface DadataBounds {
+  fromBound?: DadataBound;
+  toBound?: DadataBound;
 }
 
 export interface DadataConfig {
@@ -35,12 +41,30 @@ export interface DadataConfig {
   type?: DadataType;
   delay?: number;
   limit?: number;
-  width?: 'auto' | string;
-  minWidth?: '0' | string;
   partyAddress?: 'city' | 'full';
-  locations?: Location[];
-  locationsBoost?: Location[];
-  bounds?: Bounds;
+  locations?: DadataLocation[];
+  locationsBoost?: DadataLocation[];
+  bounds?: DadataBounds;
+
+  // Address-specific params
+  restrictValue?: boolean;
+  language?: 'ru' | 'en';
+  locationsGeo?: DadataLocationGeo[];
+  division?: 'administrative' | 'municipal';
+
+  // Party-specific params
+  entityType?: 'LEGAL' | 'INDIVIDUAL';
+  status?: string[];
+  okved?: string[];
+  branchType?: 'MAIN' | 'BRANCH';
+
+  // Bank-specific params
+  bankStatus?: string[];
+  bankType?: string[];
+
+  // FIO-specific params
+  gender?: 'MALE' | 'FEMALE' | 'UNKNOWN';
+  parts?: ('SURNAME' | 'NAME' | 'PATRONYMIC')[];
 }
 
 export const DadataConfigDefault: DadataConfig = {
@@ -48,8 +72,24 @@ export const DadataConfigDefault: DadataConfig = {
   type: DadataType.address,
   delay: 500,
   limit: 10,
-  width: 'auto',
-  minWidth: '0',
   partyAddress: 'city',
-  locations: null,
 };
+
+export interface GeolocateOptions {
+  count?: number;
+  radius_meters?: number;
+  language?: 'ru' | 'en';
+  apiKey: string;
+}
+
+export interface IplocateOptions {
+  language?: 'ru' | 'en';
+  apiKey: string;
+}
+
+/** @deprecated Use DadataLocation instead */
+export type Location = DadataLocation;
+/** @deprecated Use DadataBound instead */
+export type Bound = DadataBound;
+/** @deprecated Use DadataBounds instead */
+export type Bounds = DadataBounds;

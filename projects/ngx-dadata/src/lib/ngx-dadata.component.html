@@ -1,16 +1,49 @@
-<div class="autocomplete">
-  <input [disabled]="disabled  ? true : null" type="text" class="search" #inputValue (input)="getData(inputValue.value)"
-         [placeholder]="placeholder" (keyup.ArrowDown)="onArrowDown()" (keyup.ArrowUp)="onArrowUp()"
-         (keyup.Enter)="onEnter($event)" spellcheck="false" [(ngModel)]="value" autocomplete="off" />
-  <div *ngIf="data.length">
-    <div class="autocomplete-items">
-      <div class="autocomplele-item" *ngFor="let item of data; let i = index" (click)="onClick($event, item)" [id]="i+'item'">
-        {{item.value}}
-        <ng-template [ngIf]="type==='party'">
-          <br/>
-          <span>{{item.data?.inn}} {{config.partyAddress === 'full' ? item.data?.address?.value : item.data?.address?.data?.city}}</span>
-        </ng-template>
-      </div>
-    </div>
-  </div>
+<div class="ngx-dadata" role="combobox"
+     [attr.aria-expanded]="isOpen()"
+     [attr.aria-owns]="isOpen() ? listboxId : null"
+     [attr.aria-controls]="isOpen() ? listboxId : null"
+     [attr.aria-haspopup]="'listbox'">
+  <input
+    #inputValue
+    type="text"
+    class="ngx-dadata-input"
+    role="searchbox"
+    autocomplete="off"
+    spellcheck="false"
+    aria-autocomplete="list"
+    [attr.aria-controls]="isOpen() ? listboxId : null"
+    [attr.aria-activedescendant]="activeDescendantId()"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    [value]="currentValue"
+    (input)="onInput(inputValue.value)"
+    (keydown)="onKeydown($event)"
+    (blur)="onBlur()" />
+
+  @if (isOpen() && hasSuggestions()) {
+    <ul [id]="listboxId" class="ngx-dadata-items" role="listbox">
+      @for (item of suggestions(); track item.value; let i = $index) {
+        <li
+          [id]="optionId(i)"
+          role="option"
+          class="ngx-dadata-item"
+          [class.active]="activeIndex() === i"
+          [attr.aria-selected]="activeIndex() === i"
+          (mousedown)="onSuggestionClick(item)">
+          {{ item.value }}
+          @if (effectiveConfig().type === 'party' && item.data) {
+            <br />
+            <span class="ngx-dadata-detail">
+              {{ $any(item.data).inn }}
+              @if (effectiveConfig().partyAddress === 'full') {
+                {{ $any(item.data).address?.value }}
+              } @else {
+                {{ $any(item.data).address?.data?.city }}
+              }
+            </span>
+          }
+        </li>
+      }
+    </ul>
+  }
 </div>

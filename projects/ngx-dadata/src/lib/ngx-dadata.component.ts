@@ -1,250 +1,203 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  computed,
+  DestroyRef,
   ElementRef,
-  EventEmitter,
   forwardRef,
-  HostListener, Inject,
-  Input,
-  OnChanges,
+  inject,
+  input,
   OnInit,
-  Output,
-  Renderer2,
-  SimpleChanges,
-  ViewChild
+  output,
+  signal,
+  viewChild,
 } from '@angular/core';
-import {DadataType, NgxDadataService} from './ngx-dadata.service';
-import {Subject, timer} from 'rxjs';
-import {debounce} from 'rxjs/operators';
-import {DadataResponse} from './models/dadata-response';
-import {DadataSuggestion} from './models/suggestion';
-import {DadataConfig, DadataConfigDefault} from './dadata-config';
-import {ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {DOCUMENT} from '@angular/common';
-import {unwrapHtmlForSink} from 'safevalues';
-import {createHtml} from 'safevalues/implementation/html_impl';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs/operators';
+import { NgxDadataService } from './ngx-dadata.service';
+import { DadataSuggestion } from './models/suggestion';
+import { DadataConfig, DadataConfigDefault } from './dadata-config';
+import { NGX_DADATA_CONFIG } from './provide';
 
-/*const NGX_DADATA_VALIDATOR = {
-  provide: NG_VALIDATORS,
-  useExisting: forwardRef(() => NgxDadataComponent),
-  multi: true,
-};*/
-
-export function createDaDataValidator(value) {
-  return (c: FormControl) => {
-    const err = {
-      rangeError: {
-        given: c.value,
-        expected: value,
-      }
-    };
-
-    return (c.value !== value) ? err : null;
-  };
-}
-
-/**
- * Autocomplete IDs need to be unique across components, so this counter exists outside of
- * the component definition.
- */
-let uniqueDadataIdCounter = 0;
+let nextId = 0;
 
 @Component({
   selector: 'ngx-dadata',
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './ngx-dadata.component.html',
-  styleUrls: ['./ngx-dadata.component.scss'],
+  styleUrl: './ngx-dadata.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => NgxDadataComponent),
-    multi: true
-  }, /*NGX_DADATA_VALIDATOR*/]
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => NgxDadataComponent),
+      multi: true,
+    },
+  ],
+  host: {
+    '(document:click)': 'onOutsideClick($event)',
+  },
 })
-export class NgxDadataComponent implements OnInit, ControlValueAccessor, OnChanges {
-  private v: any = '';
-  currentFocus = -1;
+export class NgxDadataComponent implements OnInit, ControlValueAccessor {
+  private readonly dataService = inject(NgxDadataService);
+  private readonly elRef = inject(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly injectedConfig = inject(NGX_DADATA_CONFIG, { optional: true });
 
-  opened = false;
+  readonly config = input<DadataConfig>(DadataConfigDefault);
+  readonly placeholder = input('');
+  readonly disabled = input(false);
 
-  data: DadataSuggestion[] = [];
-
-  @Input() config: DadataConfig = DadataConfigDefault;
-  @Input() apiKey: string;
-  @Input() disabled = null;
-  @Input() type = DadataType.address;
-  @Input() limit = DadataConfigDefault.limit;
-  @Input() placeholder = '';
-  @Input() locations = null;
-
-  @Output() selectedSuggestion: DadataSuggestion;
-  @Output() selected: EventEmitter<DadataSuggestion> = new EventEmitter<DadataSuggestion>();
-  // @Output() selectedData = new EventEmitter<DaDataAddress | DaDataFIO | DaDataBank | DaDataParty | DaDataEmail>();
-  // @Output() selectedString = new EventEmitter<string>();
-
-  @ViewChild('inputValue', { static: true }) inputValue: ElementRef;
-
-  private inputString$ = new Subject<string>();
-
-  /** Unique ID to be used by autocomplete trigger's "aria-owns" property. */
-  id = `ngx-dadata-${uniqueDadataIdCounter++}`;
-
-  // onSuggestionSelected = (value: string) => {};
-  onTouched = () => {};
-  propagateChange: any = () => {};
-  validateFn: any = () => {};
-
-  constructor(
-    private dataService: NgxDadataService,
-    private r: Renderer2,
-    private elRef: ElementRef,
-    @Inject(DOCUMENT) private document: Document,
-    ) {
-  }
-
-  get value(): any {
-    return this.v;
-  }
-
-  set value(v: any) {
-    if (v !== this.v) {
-      this.v = v;
-      this.propagateChange(v);
+  /**
+   * Effective config: input takes priority, then DI, then DadataConfigDefault.
+   *
+   * When the consumer provides [config]="myConfig", that wins.
+   * Otherwise, if provideNgxDadata() was used, the DI config is used.
+   * As a last resort, DadataConfigDefault applies (empty apiKey, address type).
+   */
+  protected readonly effectiveConfig = computed(() => {
+    const inputConfig = this.config();
+    // If the input was explicitly set (not the default), use it
+    if (inputConfig !== DadataConfigDefault) {
+      return inputConfig;
     }
-  }
+    // Fall back to DI-provided config, then to the default
+    return this.injectedConfig ?? DadataConfigDefault;
+  });
 
-  ngOnInit() {
-    /*this.validateFn = createDaDataValidator(this._value);
-    this.propagateChange(this._value);*/
-    this.type = this.config.type;
-    this.locations = this.config.locations;
-    this.dataService.setApiKey(this.apiKey ? this.apiKey : this.config.apiKey);
-    this.inputString$.pipe(
-      debounce(() => timer(this.config.delay ? this.config.delay : 500)),
-    ).subscribe(x => {
-      this.dataService.getData(x, this.type, this.config)
-        .subscribe((y: DadataResponse) => {
-        this.data = y.suggestions;
-        if (this.data.length) {
-          this.opened = true;
-        }
+  readonly selected = output<DadataSuggestion>();
+
+  readonly inputEl = viewChild.required<ElementRef<HTMLInputElement>>('inputValue');
+
+  protected readonly suggestions = signal<DadataSuggestion[]>([]);
+  protected readonly isOpen = signal(false);
+  protected readonly activeIndex = signal(-1);
+
+  protected readonly hasSuggestions = computed(() => this.suggestions().length > 0);
+
+  readonly listboxId = `ngx-dadata-listbox-${nextId++}`;
+
+  protected currentValue = '';
+
+  private readonly input$ = new Subject<string>();
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private onChange: (value: string) => void = () => {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private onTouched: () => void = () => {};
+  private isDisabled = false;
+
+  ngOnInit(): void {
+    this.input$
+      .pipe(
+        debounceTime(this.effectiveConfig().delay ?? 500),
+        switchMap((query) => this.dataService.getSuggestions(query, this.effectiveConfig())),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((data) => {
+        this.suggestions.set(data);
+        this.isOpen.set(data.length > 0);
+        this.activeIndex.set(-1);
       });
-    });
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.value) {
-      // console.log('ngOnChanges');
+  protected activeDescendantId(): string | null {
+    const idx = this.activeIndex();
+    return idx >= 0 ? `${this.listboxId}-option-${idx}` : null;
+  }
+
+  protected optionId(index: number): string {
+    return `${this.listboxId}-option-${index}`;
+  }
+
+  protected onInput(value: string): void {
+    this.currentValue = value;
+    this.onChange(value);
+    this.input$.next(value);
+  }
+
+  protected onSuggestionClick(item: DadataSuggestion): void {
+    this.selectSuggestion(item);
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    const suggestions = this.suggestions();
+    if (!suggestions.length) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.activeIndex.update((i) => (i >= suggestions.length - 1 ? 0 : i + 1));
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.activeIndex.update((i) => (i <= 0 ? suggestions.length - 1 : i - 1));
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (this.activeIndex() >= 0) {
+          this.selectSuggestion(suggestions[this.activeIndex()]);
+        }
+        break;
+      case 'Escape':
+        this.close();
+        break;
+      case 'Home':
+        if (this.isOpen()) {
+          event.preventDefault();
+          this.activeIndex.set(0);
+        }
+        break;
+      case 'End':
+        if (this.isOpen()) {
+          event.preventDefault();
+          this.activeIndex.set(suggestions.length - 1);
+        }
+        break;
     }
   }
 
-  getData(value: string) {
-    this.inputString$.next(value);
-    this.currentFocus = -1;
+  protected onOutsideClick(event: MouseEvent): void {
+    if (this.isOpen() && !this.elRef.nativeElement.contains(event.target)) {
+      this.close();
+    }
   }
 
-  onClick(e: MouseEvent, item: DadataSuggestion) {
-    this.inputValue.nativeElement.value = item.value;
-    this.propagateChange(item.value);
-    this.inputValue.nativeElement.focus();
-    this.selectedSuggestion = item;
-    this.data = [];
-    this.currentFocus = -1;
-    this.opened = false;
+  protected onBlur(): void {
+    this.onTouched();
+  }
+
+  private selectSuggestion(item: DadataSuggestion): void {
+    this.currentValue = item.value;
+    this.onChange(item.value);
     this.selected.emit(item);
-    // this.selectedData.emit(item.data);
-    // this.selectedString.emit(item.value);
+    this.close();
+    this.inputEl().nativeElement.focus();
   }
 
-  @HostListener('document:click', ['$event'])
-  onOutsideClick($event: MouseEvent) {
-    if (!this.opened) {
-      return;
-    }
-    if (!this.elRef.nativeElement.contains($event.target)) {
-      this.data = [];
-      this.opened = false;
-    }
+  private close(): void {
+    this.suggestions.set([]);
+    this.isOpen.set(false);
+    this.activeIndex.set(-1);
   }
 
-  onArrowDown() {
-    this.removeFocus(this.currentFocus);
-    if (this.currentFocus >= this.data.length - 1) {
-      this.currentFocus = 0;
-    } else {
-      this.currentFocus++;
-    }
-    this.setFocus(this.currentFocus);
+  // ControlValueAccessor
+
+  writeValue(value: string | null): void {
+    this.currentValue = value ?? '';
   }
 
-  onArrowUp() {
-    this.removeFocus(this.currentFocus);
-    if (this.currentFocus === 0) {
-      this.currentFocus = this.data.length - 1;
-    } else {
-      this.currentFocus--;
-    }
-    this.setFocus(this.currentFocus);
+  registerOnChange(fn: (value: string) => void): void {
+    this.onChange = fn;
   }
 
-  onEnter(event: KeyboardEvent) {
-    this.selectedSuggestion = this.data[this.currentFocus];
-    this.inputValue.nativeElement.value = this.selectedSuggestion.value;
-    this.data = [];
-    this.currentFocus = -1;
-    this.propagateChange(this.selectedSuggestion.value);
-    this.selected.emit(this.selectedSuggestion);
-    // this.selectedData.emit(this.selectedSuggestion.data);
-    // this.selectedString.emit(this.selectedSuggestion.value);
-  }
-
-  setFocus(id: number) {
-    const activeEl = this.document.getElementById(id + 'item');
-    this.r.addClass(activeEl, 'active');
-  }
-
-  removeFocus(id: number) {
-    if (id !== -1) {
-      const activeEl = this.document.getElementById(id + 'item');
-      this.r.removeClass(activeEl, 'active');
-    }
-  }
-
-  writeValue(value: any): void {
-    if (value !== undefined && value !== null) {
-      this.v = value;
-    } else {
-      this.v = '';
-    }
-
-    this.r.setProperty(this.inputValue.nativeElement, 'innerHTML', unwrapHtmlForSink(createHtml(this.v)));
-  }
-
-  /**
-   * Set the function to be called
-   * when the control receives a change event.
-   *
-   * @param fn a function
-   */
-  registerOnChange(fn: any): void {
-    // this.onSuggestionSelected = fn;
-    this.propagateChange = fn;
-  }
-
-  /**
-   * Set the function to be called
-   * when the control receives a touch event.
-   *
-   * @param fn a function
-   */
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
-  /**
-   * Implements disabled state for this element
-   *
-   * @param isDisabled Disabled state flag
-   */
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.isDisabled = isDisabled;
   }
 }
