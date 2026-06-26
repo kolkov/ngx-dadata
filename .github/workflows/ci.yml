@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   build:
@@ -23,3 +24,9 @@ jobs:
       - run: npx ng lint ngx-dadata
       - run: npx ng build ngx-dadata --configuration production
       - run: npx ng test ngx-dadata --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage/lcov.info
+          use_oidc: true
