@@ -8,9 +8,11 @@ export type {
   DadataLocationGeo,
   DadataBound,
   DadataBounds,
+  GeolocateOptions,
+  IplocateOptions,
 } from './lib/dadata-config';
 export type { DadataSuggestion } from './lib/models/suggestion';
-export type { DadataResponse } from './lib/models/dadata-response';
+export type { DadataResponse, DadataIplocateResponse } from './lib/models/dadata-response';
 export type {
   DadataFIO,
   DadataAddress,

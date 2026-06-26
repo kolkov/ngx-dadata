@@ -75,6 +75,18 @@ export const DadataConfigDefault: DadataConfig = {
   partyAddress: 'city',
 };
 
+export interface GeolocateOptions {
+  count?: number;
+  radius_meters?: number;
+  language?: 'ru' | 'en';
+  apiKey: string;
+}
+
+export interface IplocateOptions {
+  language?: 'ru' | 'en';
+  apiKey: string;
+}
+
 /** @deprecated Use DadataLocation instead */
 export type Location = DadataLocation;
 /** @deprecated Use DadataBound instead */

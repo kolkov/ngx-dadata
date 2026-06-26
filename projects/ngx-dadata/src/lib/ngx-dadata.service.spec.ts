@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { NgxDadataService, DadataType } from './ngx-dadata.service';
-import { DadataConfig } from './dadata-config';
+import { DadataConfig, GeolocateOptions, IplocateOptions } from './dadata-config';
 import { DadataSuggestion } from './models/suggestion';
-import { DadataResponse } from './models/dadata-response';
+import { DadataResponse, DadataIplocateResponse } from './models/dadata-response';
 import { DadataAddress } from './models/data';
 
 const API_BASE = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/';
@@ -629,5 +629,395 @@ describe('NgxDadataService', () => {
 
     expect(errored).toBe(false);
     expect(completed).toBe(true);
+  });
+
+  // =====================================================
+  // findById
+  // =====================================================
+  describe('findById', () => {
+    const FIND_BASE = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/';
+
+    it('should send POST to /findById/party', () => {
+      service.findById('7707083893', DadataType.party, baseConfig).subscribe();
+
+      const req = httpMock.expectOne(FIND_BASE + 'party');
+      expect(req.request.method).toBe('POST');
+      req.flush(makeResponse([]));
+    });
+
+    it('should send POST to /findById/address', () => {
+      service.findById('0c5b2444-70a0-4932-980c-b4dc0d3f02b5', DadataType.address, baseConfig).subscribe();
+
+      const req = httpMock.expectOne(FIND_BASE + 'address');
+      expect(req.request.method).toBe('POST');
+      req.flush(makeResponse([]));
+    });
+
+    it('should send POST to /findById/bank', () => {
+      service.findById('044525225', DadataType.bank, baseConfig).subscribe();
+
+      const req = httpMock.expectOne(FIND_BASE + 'bank');
+      expect(req.request.method).toBe('POST');
+      req.flush(makeResponse([]));
+    });
+
+    it('should send Authorization header', () => {
+      service.findById('7707083893', DadataType.party, baseConfig).subscribe();
+
+      const req = httpMock.expectOne(FIND_BASE + 'party');
+      expect(req.request.headers.get('Authorization')).toBe('Token test-token-abc123');
+      req.flush(makeResponse([]));
+    });
+
+    it('should send query in request body', () => {
+      service.findById('7707083893', DadataType.party, baseConfig).subscribe();
+
+      const req = httpMock.expectOne(FIND_BASE + 'party');
+      expect(req.request.body.query).toBe('7707083893');
+      req.flush(makeResponse([]));
+    });
+
+    it('should send INN/KPP composite query for party', () => {
+      service.findById('7707083893/773601001', DadataType.party, baseConfig).subscribe();
+
+      const req = httpMock.expectOne(FIND_BASE + 'party');
+      expect(req.request.body.query).toBe('7707083893/773601001');
+      req.flush(makeResponse([]));
+    });
+
+    it('should return suggestions array', () => {
+      const suggestions = [makeAddressSuggestion('Sberbank')];
+
+      let result: DadataSuggestion[] = [];
+      service.findById('7707083893', DadataType.party, baseConfig).subscribe((data) => {
+        result = data;
+      });
+
+      const req = httpMock.expectOne(FIND_BASE + 'party');
+      req.flush(makeResponse(suggestions));
+
+      expect(result).toEqual(suggestions);
+      expect(result.length).toBe(1);
+    });
+
+    it('should return empty array on error', () => {
+      let result: DadataSuggestion[] | undefined;
+      service.findById('invalid', DadataType.party, baseConfig).subscribe((data) => {
+        result = data;
+      });
+
+      const req = httpMock.expectOne(FIND_BASE + 'party');
+      req.flush('Server error', { status: 500, statusText: 'Internal Server Error' });
+
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array on network error', () => {
+      let result: DadataSuggestion[] | undefined;
+      service.findById('test', DadataType.address, baseConfig).subscribe((data) => {
+        result = data;
+      });
+
+      const req = httpMock.expectOne(FIND_BASE + 'address');
+      req.error(new ProgressEvent('error'));
+
+      expect(result).toEqual([]);
+    });
+
+    it('should pass count when limit is provided in config', () => {
+      const config: DadataConfig = { ...baseConfig, limit: 3 };
+      service.findById('7707083893', DadataType.party, config).subscribe();
+
+      const req = httpMock.expectOne(FIND_BASE + 'party');
+      expect(req.request.body.count).toBe(3);
+      req.flush(makeResponse([]));
+    });
+
+    it('should not send count when limit is not provided', () => {
+      service.findById('7707083893', DadataType.party, baseConfig).subscribe();
+
+      const req = httpMock.expectOne(FIND_BASE + 'party');
+      expect(req.request.body).not.toHaveProperty('count');
+      req.flush(makeResponse([]));
+    });
+
+    it('should not throw on error — completes normally', () => {
+      let completed = false;
+      let errored = false;
+
+      service.findById('test', DadataType.address, baseConfig).subscribe({
+        complete: () => { completed = true; },
+        error: () => { errored = true; },
+      });
+
+      const req = httpMock.expectOne(FIND_BASE + 'address');
+      req.flush('Fail', { status: 500, statusText: 'Internal Server Error' });
+
+      expect(errored).toBe(false);
+      expect(completed).toBe(true);
+    });
+  });
+
+  // =====================================================
+  // geolocate
+  // =====================================================
+  describe('geolocate', () => {
+    const GEO_URL = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/geolocate/address';
+
+    const geoOptions: GeolocateOptions = {
+      apiKey: 'test-token-abc123',
+    };
+
+    it('should send POST to /geolocate/address', () => {
+      service.geolocate(55.75, 37.57, geoOptions).subscribe();
+
+      const req = httpMock.expectOne(GEO_URL);
+      expect(req.request.method).toBe('POST');
+      req.flush(makeResponse([]));
+    });
+
+    it('should send Authorization header', () => {
+      service.geolocate(55.75, 37.57, geoOptions).subscribe();
+
+      const req = httpMock.expectOne(GEO_URL);
+      expect(req.request.headers.get('Authorization')).toBe('Token test-token-abc123');
+      req.flush(makeResponse([]));
+    });
+
+    it('should send lat and lon in request body', () => {
+      service.geolocate(55.75, 37.57, geoOptions).subscribe();
+
+      const req = httpMock.expectOne(GEO_URL);
+      expect(req.request.body.lat).toBe(55.75);
+      expect(req.request.body.lon).toBe(37.57);
+      req.flush(makeResponse([]));
+    });
+
+    it('should send optional radius_meters when provided', () => {
+      const options: GeolocateOptions = { ...geoOptions, radius_meters: 500 };
+      service.geolocate(55.75, 37.57, options).subscribe();
+
+      const req = httpMock.expectOne(GEO_URL);
+      expect(req.request.body.radius_meters).toBe(500);
+      req.flush(makeResponse([]));
+    });
+
+    it('should not send radius_meters when not provided', () => {
+      service.geolocate(55.75, 37.57, geoOptions).subscribe();
+
+      const req = httpMock.expectOne(GEO_URL);
+      expect(req.request.body).not.toHaveProperty('radius_meters');
+      req.flush(makeResponse([]));
+    });
+
+    it('should send optional count when provided', () => {
+      const options: GeolocateOptions = { ...geoOptions, count: 5 };
+      service.geolocate(55.75, 37.57, options).subscribe();
+
+      const req = httpMock.expectOne(GEO_URL);
+      expect(req.request.body.count).toBe(5);
+      req.flush(makeResponse([]));
+    });
+
+    it('should not send count when not provided', () => {
+      service.geolocate(55.75, 37.57, geoOptions).subscribe();
+
+      const req = httpMock.expectOne(GEO_URL);
+      expect(req.request.body).not.toHaveProperty('count');
+      req.flush(makeResponse([]));
+    });
+
+    it('should send optional language when provided', () => {
+      const options: GeolocateOptions = { ...geoOptions, language: 'en' };
+      service.geolocate(55.75, 37.57, options).subscribe();
+
+      const req = httpMock.expectOne(GEO_URL);
+      expect(req.request.body.language).toBe('en');
+      req.flush(makeResponse([]));
+    });
+
+    it('should not send language when not provided', () => {
+      service.geolocate(55.75, 37.57, geoOptions).subscribe();
+
+      const req = httpMock.expectOne(GEO_URL);
+      expect(req.request.body).not.toHaveProperty('language');
+      req.flush(makeResponse([]));
+    });
+
+    it('should return suggestions array', () => {
+      const suggestions = [
+        makeAddressSuggestion('Moscow, Red Square, 1'),
+        makeAddressSuggestion('Moscow, Red Square, 3'),
+      ];
+
+      let result: DadataSuggestion[] = [];
+      service.geolocate(55.75, 37.57, geoOptions).subscribe((data) => {
+        result = data;
+      });
+
+      const req = httpMock.expectOne(GEO_URL);
+      req.flush(makeResponse(suggestions));
+
+      expect(result).toEqual(suggestions);
+      expect(result.length).toBe(2);
+    });
+
+    it('should return empty array on error', () => {
+      let result: DadataSuggestion[] | undefined;
+      service.geolocate(55.75, 37.57, geoOptions).subscribe((data) => {
+        result = data;
+      });
+
+      const req = httpMock.expectOne(GEO_URL);
+      req.flush('Server error', { status: 500, statusText: 'Internal Server Error' });
+
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array on network error', () => {
+      let result: DadataSuggestion[] | undefined;
+      service.geolocate(55.75, 37.57, geoOptions).subscribe((data) => {
+        result = data;
+      });
+
+      const req = httpMock.expectOne(GEO_URL);
+      req.error(new ProgressEvent('error'));
+
+      expect(result).toEqual([]);
+    });
+
+    it('should not throw on error — completes normally', () => {
+      let completed = false;
+      let errored = false;
+
+      service.geolocate(55.75, 37.57, geoOptions).subscribe({
+        complete: () => { completed = true; },
+        error: () => { errored = true; },
+      });
+
+      const req = httpMock.expectOne(GEO_URL);
+      req.flush('Fail', { status: 500, statusText: 'Internal Server Error' });
+
+      expect(errored).toBe(false);
+      expect(completed).toBe(true);
+    });
+  });
+
+  // =====================================================
+  // iplocate
+  // =====================================================
+  describe('iplocate', () => {
+    const IP_URL = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/iplocate/address';
+
+    const ipOptions: IplocateOptions = {
+      apiKey: 'test-token-abc123',
+    };
+
+    it('should send POST to /iplocate/address', () => {
+      service.iplocate('192.168.1.1', ipOptions).subscribe();
+
+      const req = httpMock.expectOne(IP_URL);
+      expect(req.request.method).toBe('POST');
+      req.flush({ location: null });
+    });
+
+    it('should send Authorization header', () => {
+      service.iplocate('192.168.1.1', ipOptions).subscribe();
+
+      const req = httpMock.expectOne(IP_URL);
+      expect(req.request.headers.get('Authorization')).toBe('Token test-token-abc123');
+      req.flush({ location: null });
+    });
+
+    it('should send ip in request body', () => {
+      service.iplocate('8.8.8.8', ipOptions).subscribe();
+
+      const req = httpMock.expectOne(IP_URL);
+      expect(req.request.body.ip).toBe('8.8.8.8');
+      req.flush({ location: null });
+    });
+
+    it('should send optional language when provided', () => {
+      const options: IplocateOptions = { ...ipOptions, language: 'en' };
+      service.iplocate('8.8.8.8', options).subscribe();
+
+      const req = httpMock.expectOne(IP_URL);
+      expect(req.request.body.language).toBe('en');
+      req.flush({ location: null });
+    });
+
+    it('should not send language when not provided', () => {
+      service.iplocate('8.8.8.8', ipOptions).subscribe();
+
+      const req = httpMock.expectOne(IP_URL);
+      expect(req.request.body).not.toHaveProperty('language');
+      req.flush({ location: null });
+    });
+
+    it('should return single suggestion from response.location', () => {
+      const suggestion = makeAddressSuggestion('Moscow');
+
+      let result: DadataSuggestion | null = null;
+      service.iplocate('8.8.8.8', ipOptions).subscribe((data) => {
+        result = data;
+      });
+
+      const req = httpMock.expectOne(IP_URL);
+      req.flush({ location: suggestion } as DadataIplocateResponse);
+
+      expect(result).toEqual(suggestion);
+    });
+
+    it('should return null when location is null', () => {
+      let result: DadataSuggestion | null | undefined;
+      service.iplocate('127.0.0.1', ipOptions).subscribe((data) => {
+        result = data;
+      });
+
+      const req = httpMock.expectOne(IP_URL);
+      req.flush({ location: null } as DadataIplocateResponse);
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null on HTTP error', () => {
+      let result: DadataSuggestion | null | undefined;
+      service.iplocate('8.8.8.8', ipOptions).subscribe((data) => {
+        result = data;
+      });
+
+      const req = httpMock.expectOne(IP_URL);
+      req.flush('Server error', { status: 500, statusText: 'Internal Server Error' });
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null on network error', () => {
+      let result: DadataSuggestion | null | undefined;
+      service.iplocate('8.8.8.8', ipOptions).subscribe((data) => {
+        result = data;
+      });
+
+      const req = httpMock.expectOne(IP_URL);
+      req.error(new ProgressEvent('error'));
+
+      expect(result).toBeNull();
+    });
+
+    it('should not throw on error — completes normally', () => {
+      let completed = false;
+      let errored = false;
+
+      service.iplocate('8.8.8.8', ipOptions).subscribe({
+        complete: () => { completed = true; },
+        error: () => { errored = true; },
+      });
+
+      const req = httpMock.expectOne(IP_URL);
+      req.flush('Fail', { status: 500, statusText: 'Internal Server Error' });
+
+      expect(errored).toBe(false);
+      expect(completed).toBe(true);
+    });
   });
 });

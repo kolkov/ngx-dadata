@@ -2,9 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { DadataResponse } from './models/dadata-response';
+import { DadataResponse, DadataIplocateResponse } from './models/dadata-response';
 import { DadataSuggestion } from './models/suggestion';
-import { DadataConfig } from './dadata-config';
+import { DadataConfig, GeolocateOptions, IplocateOptions } from './dadata-config';
 
 export enum DadataType {
   fio = 'fio',
@@ -14,20 +14,33 @@ export enum DadataType {
   email = 'email',
 }
 
-const API_BASE = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/';
+const API_BASE = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/';
 
 @Injectable({ providedIn: 'root' })
 export class NgxDadataService {
   private readonly http = inject(HttpClient);
 
-  getSuggestions(query: string, config: DadataConfig): Observable<DadataSuggestion[]> {
-    const type = config.type ?? DadataType.address;
-    const headers = new HttpHeaders({
+  private buildHeaders(apiKey: string): HttpHeaders {
+    return new HttpHeaders({
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Authorization: `Token ${config.apiKey}`,
+      Authorization: `Token ${apiKey}`,
     });
-    const body: Record<string, unknown> = {
+  }
+
+  private static stripUndefined(body: Record<string, unknown>): Record<string, unknown> {
+    for (const key of Object.keys(body)) {
+      if (body[key] === undefined) {
+        delete body[key];
+      }
+    }
+    return body;
+  }
+
+  getSuggestions(query: string, config: DadataConfig): Observable<DadataSuggestion[]> {
+    const type = config.type ?? DadataType.address;
+    const headers = this.buildHeaders(config.apiKey);
+    const body: Record<string, unknown> = NgxDadataService.stripUndefined({
       query,
       count: config.limit ?? 10,
       // Common params
@@ -51,18 +64,53 @@ export class NgxDadataService {
       // FIO params
       gender: config.gender,
       parts: config.parts,
-    };
+    });
 
-    // Remove undefined keys to keep request body clean
-    for (const key of Object.keys(body)) {
-      if (body[key] === undefined) {
-        delete body[key];
-      }
-    }
-
-    return this.http.post<DadataResponse>(API_BASE + type, body, { headers }).pipe(
+    return this.http.post<DadataResponse>(`${API_BASE}suggest/${type}`, body, { headers }).pipe(
       map((response) => response.suggestions),
       catchError(() => of([])),
+    );
+  }
+
+  findById(query: string, type: DadataType, config: DadataConfig): Observable<DadataSuggestion[]> {
+    const headers = this.buildHeaders(config.apiKey);
+    const body: Record<string, unknown> = NgxDadataService.stripUndefined({
+      query,
+      count: config.limit,
+    });
+
+    return this.http.post<DadataResponse>(`${API_BASE}findById/${type}`, body, { headers }).pipe(
+      map((response) => response.suggestions),
+      catchError(() => of([])),
+    );
+  }
+
+  geolocate(lat: number, lon: number, options: GeolocateOptions): Observable<DadataSuggestion[]> {
+    const headers = this.buildHeaders(options.apiKey);
+    const body: Record<string, unknown> = NgxDadataService.stripUndefined({
+      lat,
+      lon,
+      count: options.count,
+      radius_meters: options.radius_meters,
+      language: options.language,
+    });
+
+    return this.http.post<DadataResponse>(`${API_BASE}geolocate/address`, body, { headers }).pipe(
+      map((response) => response.suggestions),
+      catchError(() => of([])),
+    );
+  }
+
+  iplocate(ip: string, options: IplocateOptions): Observable<DadataSuggestion | null> {
+    const headers = this.buildHeaders(options.apiKey);
+    const body: Record<string, unknown> = NgxDadataService.stripUndefined({
+      ip,
+      language: options.language,
+    });
+
+    return this.http.post<DadataIplocateResponse>(`${API_BASE}iplocate/address`, body, { headers }).pipe(
+      map((response) => response.location),
+      catchError(() => of(null)),
     );
   }
 }
