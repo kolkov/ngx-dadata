@@ -27,7 +27,11 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/ngx-dadata/tsconfig.spec.json"
+            "tsConfig": "projects/ngx-dadata/tsconfig.spec.json",
+            "include": [
+              "**/*.spec.ts",
+              "../elements/**/*.spec.ts"
+            ]
           }
         }
       }
