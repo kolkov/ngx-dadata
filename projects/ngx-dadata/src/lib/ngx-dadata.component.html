@@ -1,6 +1,7 @@
 <div class="ngx-dadata" role="combobox"
      [attr.aria-expanded]="isOpen()"
      [attr.aria-owns]="isOpen() ? listboxId : null"
+     [attr.aria-controls]="isOpen() ? listboxId : null"
      [attr.aria-haspopup]="'listbox'">
   <input
     #inputValue

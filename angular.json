@@ -33,6 +33,15 @@
               "../elements/**/*.spec.ts"
             ]
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/ngx-dadata/**/*.ts",
+              "projects/ngx-dadata/**/*.html"
+            ]
+          }
         }
       }
     },

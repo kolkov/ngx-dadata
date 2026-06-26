@@ -4,9 +4,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { NgxDadataComponent } from './ngx-dadata.component';
 import { DadataType } from './ngx-dadata.service';
-import { DadataConfig, DadataConfigDefault } from './dadata-config';
+import { DadataConfig } from './dadata-config';
 import { DadataSuggestion } from './models/suggestion';
-import { DadataAddress } from './models/data';
+import { DadataAddress, DadataParty } from './models/data';
 import { provideNgxDadata } from './provide';
 
 const API_BASE = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/';
@@ -67,7 +67,7 @@ function typeAndFlush(
   httpMock: HttpTestingController,
   query: string,
   suggestions: DadataSuggestion[],
-  apiType: string = 'address',
+  apiType = 'address',
   delay: number = TEST_CONFIG.delay!,
 ): void {
   typeInInput(fixture, query);
@@ -845,7 +845,7 @@ describe('NgxDadataComponent', () => {
           unrestricted_value: 'Moscow, Tverskaya st., 1',
           data: { city: 'Moscow' } as DadataAddress,
         },
-      } as any,
+      } as unknown as DadataParty,
     };
 
     it('should render INN for party type suggestions', () => {
@@ -892,7 +892,6 @@ describe('NgxDadataComponent', () => {
     };
 
     let diFixture: ComponentFixture<NgxDadataComponent>;
-    let diComponent: NgxDadataComponent;
     let diHttpMock: HttpTestingController;
 
     beforeEach(() => {
@@ -909,7 +908,6 @@ describe('NgxDadataComponent', () => {
       });
 
       diFixture = TestBed.createComponent(NgxDadataComponent);
-      diComponent = diFixture.componentInstance;
       diHttpMock = TestBed.inject(HttpTestingController);
       // Do NOT set config input — let DI config apply
       diFixture.detectChanges();

@@ -20,7 +20,6 @@ describe('registerNgxDadataElement', () => {
 
   it('should skip registration when customElements already has ngx-dadata', async () => {
     // Arrange: stub customElements.get to return a truthy value
-    const originalGet = customElements.get.bind(customElements);
     const getSpy = vi.spyOn(customElements, 'get').mockReturnValue(class {} as unknown as CustomElementConstructor);
 
     const { registerNgxDadataElement } = await import('./register-element');

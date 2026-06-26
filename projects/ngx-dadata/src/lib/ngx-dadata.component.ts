@@ -16,7 +16,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
-import { DadataType, NgxDadataService } from './ngx-dadata.service';
+import { NgxDadataService } from './ngx-dadata.service';
 import { DadataSuggestion } from './models/suggestion';
 import { DadataConfig, DadataConfigDefault } from './dadata-config';
 import { NGX_DADATA_CONFIG } from './provide';
@@ -83,7 +83,9 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor {
   protected currentValue = '';
 
   private readonly input$ = new Subject<string>();
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onChange: (value: string) => void = () => {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onTouched: () => void = () => {};
   private isDisabled = false;
 
