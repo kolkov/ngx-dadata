@@ -1,0 +1,19 @@
+# ngx-dadata — Angular Dadata Suggestions Component
+
+> Angular 19+ autocomplete component for Dadata.ru API.
+
+## Docs
+
+- [npm](https://www.npmjs.com/package/@kolkov/ngx-dadata)
+- [AGENTS.md](https://github.com/kolkov/ngx-dadata/blob/master/AGENTS.md): AI agent instructions
+- [Dadata API](https://dadata.ru/api/): Dadata suggestions API documentation
+
+## Features
+
+- 24 suggestion types (address, FIO, party, bank, email, country, metro, etc.)
+- findById, geolocate, iplocate endpoints
+- WAI-ARIA combobox (WCAG AA accessible)
+- CSS custom properties theming
+- Web Components via Angular Elements
+- provideNgxDadata() for DI configuration
+- 182 tests, 93%+ coverage
