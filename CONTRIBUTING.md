@@ -1,74 +1,141 @@
+# Contributing to ngx-dadata
 
-# Report an Issue
+Thank you for your interest in contributing to `@kolkov/ngx-dadata`. This document explains how to report issues, set up a development environment, and submit changes.
 
-Help us make `ngx-dadata` better! If you think you might have found a bug, or some other weirdness, start by making sure
-it hasn't already been reported. You can [search through existing @kolkov/ngx-dadata issues](https://github.com/kolkov/ngx-dadata/issues)
-to see if someone's reported one similar to yours.
+## Reporting Issues
 
-If not, then [create a plunkr](http://bit.ly/UIR-Plunk) that demonstrates the problem (try to use as little code
-as possible: the more minimalist, the faster we can debug it).
+Before creating an issue, search [existing issues](https://github.com/kolkov/ngx-dadata/issues) to avoid duplicates.
 
-Next, [create a new issue](https://github.com/kolkov/ngx-dadata/issues/new) that briefly explains the problem,
-and provides a bit of background as to the circumstances that triggered it. Don't forget to include the link to
-that plunkr you created!
+When filing a bug report, include:
 
-**Note**: If you're unsure how a feature is used, or are encountering some unexpected behavior that you aren't sure
-is a bug, it's best to talk it out on
-[StackOverflow](http://stackoverflow.com/questions/ask?tags=angular,@kolkov/ngx-dadata) before reporting it. This
-keeps development streamlined, and helps us focus on building great software.
+- Angular and `@kolkov/ngx-dadata` version numbers
+- A minimal reproduction (StackBlitz preferred)
+- Expected vs. actual behavior
+- Browser and OS
 
+For questions about usage, consider asking on [StackOverflow](https://stackoverflow.com/questions/ask?tags=angular,ngx-dadata) first.
 
-Issues only! |
--------------|
-Please keep in mind that the issue tracker is for *issues*. Please do *not* post an issue if you need help or support. Instead, use StackOverflow. |
+## Development Setup
 
-# Contribute
+### Prerequisites
 
-**(1)** See the **[Developing](#developing)** section below, to get the development version of `ngx-dadata` up and running on your local machine.
+- [Node.js](https://nodejs.org/) 18 or later
+- npm 9 or later
+- Git
 
-**(2)** Check out the [roadmap](https://github.com/kolkov/ngx-dadata/milestones) to see where the project is headed, and if your feature idea fits with where we're headed.
+### Clone and Install
 
-**(3)** If you're not sure, [open an RFC](https://github.com/kolkov/ngx-dadata/issues/new?title=RFC:%20My%20idea) to get some feedback on your idea.
-
-**(4)** Finally, commit some code and open a pull request. Code & commits should abide by the following rules:
-
-- *Always* have test coverage for new features (or regression tests for bug fixes), and *never* break existing tests
-- Commits should represent one logical change each; if a feature goes through multiple iterations, squash your commits down to one
-- Make sure to follow the [Angular commit message format](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit-message-format) so your change will appear in the changelog of the next release.
-- Changes should always respect the coding style of the project
-
-
-# Developing
-
-`ngx-dadata` uses <code>Angular cli</code>, <code>npm</code> and <code>webpack</code>.
-
-## Fetch the source code
-
-The code for `ngx-dadata` is :
-
-* [AngularEditor](https://github.com/kolkov/ngx-dadata) (`@kolkov/ngx-dadata` on npm)
-
-Clone repository.
-
-```
-mkdir dadata
-cd dadata
+```bash
 git clone https://github.com/kolkov/ngx-dadata.git
-```
-
-## Install dependencies
-
-Use `npm` to install the development dependencies for the repository.
-
-```
-cd dadata
+cd ngx-dadata
 npm install
 ```
 
-After executing these steps, your local copy of `@kolkov/ngx-dadata-app` will be built using your local copy of `@kolkov/ngx-dadata`
-instead of the prebuilt version specified in `package.json`.
+### Project Structure
 
-## Develop
+This is an Angular CLI workspace with two projects:
 
-* `npm run build:lib: Continuously builds the `@kolkov/ngx-dadata` code when sources change.
-* `npm run start`: Continuously builds and runs Demo app when source or tests change.
+```
+ngx-dadata/
+├── projects/
+│   ├── ngx-dadata/          # Library source
+│   │   ├── src/lib/         # Components, services, models
+│   │   └── elements/src/    # Web Components (Angular Elements)
+│   └── ngx-dadata-app/      # Demo application
+├── .github/workflows/       # GitHub Actions CI/CD
+├── eslint.config.mjs        # ESLint flat config
+└── angular.json             # Workspace configuration
+```
+
+### Common Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm start` | Serve the demo app at `http://localhost:4200` |
+| `npm run build:lib` | Build the library (production) to `dist/ngx-dadata/` |
+| `npm run build-watch:lib` | Build the library in watch mode |
+| `npm run test:lib` | Run library tests (watch mode) |
+| `npm run test-ci` | Run library tests with coverage (single run) |
+| `npm run lint:lib` | Lint the library |
+| `npm run lint` | Lint all projects |
+| `npm run format` | Format all source files with Prettier |
+| `npm run format:check` | Check formatting without modifying files |
+
+### Running a Single Test
+
+Use `fdescribe` or `fit` in a spec file to focus on specific tests, then run `npm run test:lib`.
+
+## Tooling
+
+- **Framework**: Angular 22 (library peer deps `>=19.0.0`)
+- **Test runner**: [Vitest](https://vitest.dev/) via `@angular/build:unit-test` builder
+- **Linter**: [ESLint](https://eslint.org/) with `angular-eslint` and `typescript-eslint` (flat config)
+- **Formatter**: [Prettier](https://prettier.io/)
+- **Build**: [ng-packagr](https://github.com/ng-packagr/ng-packagr) with APF partial compilation
+- **CI**: [GitHub Actions](https://github.com/kolkov/ngx-dadata/actions) -- lint, build, test with coverage
+
+## Submitting Changes
+
+### Workflow
+
+1. Fork the repository and create a feature branch from `master`:
+
+   ```bash
+   git checkout -b feat/my-feature
+   ```
+
+2. Make your changes. Ensure:
+
+   - New features have test coverage
+   - Existing tests pass (`npm run test-ci`)
+   - Code passes linting (`npm run lint:lib`)
+   - Library builds (`npm run build:lib`)
+
+3. Commit using [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+   ```
+   feat: add support for XYZ
+   fix: prevent null reference in suggestion click
+   docs: update config table in README
+   test: add coverage for keyboard navigation
+   refactor: extract suggestion filtering logic
+   chore: update dev dependencies
+   ```
+
+4. Push and open a pull request against `master`.
+
+### Code Standards
+
+- **TypeScript strict mode** -- no `any`, no implicit returns, no unused variables
+- **Standalone components** with `ChangeDetectionStrategy.OnPush`
+- **Signal-based** inputs (`input()`), outputs (`output()`), and internal state (`signal()`, `computed()`)
+- **No direct DOM access** -- use template bindings or `afterRender()` for SSR safety
+- **ARIA attributes** on all interactive elements
+- **`ngx` selector prefix** enforced by ESLint (element: `ngx-*`, directive: `ngx`+camelCase)
+
+### Testing Guidelines
+
+Tests use Vitest and `@angular/core/testing`. The test suite includes:
+
+- **Unit tests** for the service (HTTP calls, error handling, parameter mapping)
+- **Integration tests** for the component (rendering, keyboard navigation, form binding)
+- **Accessibility tests** (ARIA attributes, roles, keyboard interaction)
+
+When adding a feature or fixing a bug, write tests that cover:
+
+- The expected behavior (happy path)
+- Edge cases and error conditions
+- Accessibility implications (if the change affects the DOM)
+
+### Pull Request Checklist
+
+- [ ] Library builds without errors: `npm run build:lib`
+- [ ] All tests pass: `npm run test-ci`
+- [ ] Linting passes: `npm run lint:lib`
+- [ ] New features have tests
+- [ ] Bug fixes include a regression test
+- [ ] Commit messages follow Conventional Commits
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the [MIT License](LICENSE).
