@@ -118,7 +118,7 @@ export interface DadataParty {
   name: {
     full_with_opf: string | null;
     short_with_opf: string | null;
-    latinstring: | null;
+    latin: string | null;
     full: string | null;
     short: string | null
   };

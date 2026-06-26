@@ -1,14 +1,9 @@
 import { NgModule } from '@angular/core';
 import { NgxDadataComponent } from './ngx-dadata.component';
-import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
 
+/** @deprecated Import NgxDadataComponent directly as a standalone component */
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  declarations: [NgxDadataComponent],
-  exports: [NgxDadataComponent]
+  imports: [NgxDadataComponent],
+  exports: [NgxDadataComponent],
 })
-export class NgxDadataModule { }
+export class NgxDadataModule {}

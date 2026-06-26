@@ -1,6 +1,6 @@
-import {DadataType} from './ngx-dadata.service';
+import { DadataType } from './ngx-dadata.service';
 
-export interface Location {
+export interface DadataLocation {
   country?: string;
   country_iso_code?: string;
   region?: string;
@@ -21,13 +21,13 @@ export interface Location {
   street_fias_id?: string;
 }
 
-export interface Bound {
-  value: 'country' | 'region' | 'city' | 'street' | 'settlement' | 'area' | 'house';
+export interface DadataBound {
+  value: 'country' | 'region' | 'area' | 'city' | 'settlement' | 'street' | 'house';
 }
 
-export interface Bounds {
-  fromBound?: Bound;
-  toBound?: Bound;
+export interface DadataBounds {
+  fromBound?: DadataBound;
+  toBound?: DadataBound;
 }
 
 export interface DadataConfig {
@@ -35,12 +35,10 @@ export interface DadataConfig {
   type?: DadataType;
   delay?: number;
   limit?: number;
-  width?: 'auto' | string;
-  minWidth?: '0' | string;
   partyAddress?: 'city' | 'full';
-  locations?: Location[];
-  locationsBoost?: Location[];
-  bounds?: Bounds;
+  locations?: DadataLocation[];
+  locationsBoost?: DadataLocation[];
+  bounds?: DadataBounds;
 }
 
 export const DadataConfigDefault: DadataConfig = {
@@ -48,8 +46,12 @@ export const DadataConfigDefault: DadataConfig = {
   type: DadataType.address,
   delay: 500,
   limit: 10,
-  width: 'auto',
-  minWidth: '0',
   partyAddress: 'city',
-  locations: null,
 };
+
+/** @deprecated Use DadataLocation instead */
+export type Location = DadataLocation;
+/** @deprecated Use DadataBound instead */
+export type Bound = DadataBound;
+/** @deprecated Use DadataBounds instead */
+export type Bounds = DadataBounds;
