@@ -1,30 +1,77 @@
+// =============================================================================
+// ngx-dadata design tokens & component styles
+//
+// All color defaults use light-dark() for automatic dark mode support.
+// Consumers override tokens on the host element or any ancestor:
+//
+//   ngx-dadata {
+//     --ngx-dadata-bg: #f5f5f5;
+//     --ngx-dadata-focus-color: #0066cc;
+//   }
+//
+// Browser support: light-dark() — Chrome 123+, Firefox 120+, Safari 17.5+.
+// @starting-style — Chrome 117+, Firefox 129+, Safari 17.5+.
+// Older browsers get static fallback (no animation, system colors).
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Host
+// ---------------------------------------------------------------------------
+
 :host {
   display: block;
+  color-scheme: light dark;
+  font-family: var(--ngx-dadata-font-family, inherit);
+  font-size: var(--ngx-dadata-font-size, 1rem);
 }
+
+// ---------------------------------------------------------------------------
+// Container
+// ---------------------------------------------------------------------------
 
 .ngx-dadata {
   position: relative;
 }
 
+// ---------------------------------------------------------------------------
+// Input
+// ---------------------------------------------------------------------------
+
 .ngx-dadata-input {
   box-sizing: border-box;
   width: 100%;
-  padding: 8px;
-  border: 1px solid var(--ngx-dadata-border-color, #d4d4d4);
-  border-radius: var(--ngx-dadata-border-radius, 4px);
-  background-color: var(--ngx-dadata-bg, #fff);
+  padding: var(--ngx-dadata-input-padding-y, 10px) var(--ngx-dadata-input-padding-x, 12px);
+  border: 1px solid var(--ngx-dadata-border-color, light-dark(#d1d5db, #374151));
+  border-radius: var(--ngx-dadata-border-radius, 8px);
+  background-color: var(--ngx-dadata-bg, light-dark(#fff, #1f2937));
+  color: var(--ngx-dadata-color, light-dark(#111827, #f9fafb));
   font: inherit;
+  transition: border-color var(--ngx-dadata-transition-duration, 150ms) ease,
+              box-shadow var(--ngx-dadata-transition-duration, 150ms) ease;
 
-  &:focus {
-    outline: 2px solid var(--ngx-dadata-focus-color, #4a90d9);
+  &::placeholder {
+    color: var(--ngx-dadata-placeholder-color, light-dark(#9ca3af, #6b7280));
+    opacity: 1; // Firefox normalisation
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ngx-dadata-focus-color, light-dark(#4a90d9, #60a5fa));
     outline-offset: -1px;
   }
 
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+
   &:disabled {
-    opacity: 0.6;
+    opacity: var(--ngx-dadata-disabled-opacity, 0.5);
     cursor: not-allowed;
   }
 }
+
+// ---------------------------------------------------------------------------
+// Dropdown panel
+// ---------------------------------------------------------------------------
 
 .ngx-dadata-items {
   position: absolute;
@@ -35,34 +82,123 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  border: 1px solid var(--ngx-dadata-border-color, #d4d4d4);
+  border: 1px solid var(--ngx-dadata-dropdown-border-color, light-dark(#e5e7eb, #374151));
   border-top: none;
-  border-radius: 0 0 var(--ngx-dadata-border-radius, 4px) var(--ngx-dadata-border-radius, 4px);
-  background-color: var(--ngx-dadata-bg, #fff);
-  max-height: 300px;
+  border-radius: var(--ngx-dadata-dropdown-border-radius, 0 0 8px 8px);
+  background-color: var(--ngx-dadata-dropdown-bg, light-dark(#fff, #1f2937));
+  box-shadow: var(--ngx-dadata-dropdown-shadow, light-dark(0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 4px 6px -1px rgba(0, 0, 0, 0.4)));
+  max-height: var(--ngx-dadata-dropdown-max-height, 300px);
   overflow-y: auto;
+  overscroll-behavior: contain;
+
+  // Scrollbar styling (Firefox, Chrome 121+)
+  scrollbar-width: thin;
+  scrollbar-color: var(--ngx-dadata-scrollbar-thumb, light-dark(#c1c1c1, #4b5563))
+                   var(--ngx-dadata-scrollbar-track, transparent);
+
+  // Entry animation (progressive enhancement — no animation in unsupported browsers)
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--ngx-dadata-transition-duration, 150ms) cubic-bezier(0, 0, 0.2, 1),
+    transform var(--ngx-dadata-transition-duration, 150ms) cubic-bezier(0, 0, 0.2, 1);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
 }
 
+// ---------------------------------------------------------------------------
+// Option items
+// ---------------------------------------------------------------------------
+
 .ngx-dadata-item {
-  padding: 8px 12px;
+  padding: var(--ngx-dadata-option-padding-y, 8px) var(--ngx-dadata-option-padding-x, 12px);
   cursor: pointer;
-  border-bottom: 1px solid var(--ngx-dadata-border-color, #d4d4d4);
+  border-bottom: 1px solid var(--ngx-dadata-dropdown-border-color, light-dark(#e5e7eb, #374151));
+  transition: background-color var(--ngx-dadata-transition-duration, 150ms) ease;
 
   &:last-child {
     border-bottom: none;
   }
 
   &:hover {
-    background-color: var(--ngx-dadata-hover-bg, #f0f0f0);
+    background-color: var(--ngx-dadata-hover-bg, light-dark(#f3f4f6, #374151));
   }
 
   &.active {
-    background-color: var(--ngx-dadata-active-bg, #4a90d9);
-    color: var(--ngx-dadata-active-color, #fff);
+    background-color: var(--ngx-dadata-active-bg, light-dark(#4a90d9, #60a5fa));
+    color: var(--ngx-dadata-active-color, light-dark(#fff, #111827));
   }
 }
 
+// ---------------------------------------------------------------------------
+// Secondary detail text (INN, address in party mode)
+// ---------------------------------------------------------------------------
+
 .ngx-dadata-detail {
-  color: var(--ngx-dadata-detail-color, #888);
-  font-size: 85%;
+  color: var(--ngx-dadata-detail-color, light-dark(#6b7280, #9ca3af));
+  font-size: var(--ngx-dadata-detail-font-size, 0.85em);
+}
+
+// ---------------------------------------------------------------------------
+// Match highlight (for future substring highlighting)
+// ---------------------------------------------------------------------------
+
+.ngx-dadata-match {
+  background-color: var(--ngx-dadata-match-bg, light-dark(rgba(74, 144, 217, 0.15), rgba(96, 165, 250, 0.25)));
+  border-radius: 2px;
+}
+
+// ---------------------------------------------------------------------------
+// Touch devices — larger tap targets per WCAG 2.5.5 (AAA) / 2.5.8 (AA)
+// ---------------------------------------------------------------------------
+
+@media (pointer: coarse) {
+  .ngx-dadata-input {
+    min-height: 48px;
+    font-size: max(var(--ngx-dadata-font-size, 1rem), 16px); // prevent iOS zoom
+  }
+
+  .ngx-dadata-item {
+    padding: 12px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Reduced motion
+// ---------------------------------------------------------------------------
+
+@media (prefers-reduced-motion: reduce) {
+  .ngx-dadata-items {
+    transition-duration: 0ms;
+  }
+
+  .ngx-dadata-input {
+    transition-duration: 0ms;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// High contrast / forced colors (Windows High Contrast Mode)
+// ---------------------------------------------------------------------------
+
+@media (forced-colors: active) {
+  .ngx-dadata-items {
+    outline: 1px solid;
+  }
+
+  .ngx-dadata-item.active {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  .ngx-dadata-input:focus-visible {
+    outline: 2px solid Highlight;
+  }
 }

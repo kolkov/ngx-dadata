@@ -272,31 +272,96 @@ Calling `registerNgxDadataElement()` multiple times is safe -- subsequent calls 
 
 ## Theming
 
-The component exposes CSS custom properties for styling. Override them on the host element or any ancestor:
+The component uses CSS custom properties with `light-dark()` defaults for automatic dark mode support. No extra configuration needed -- the component adapts to `prefers-color-scheme` out of the box.
+
+Override tokens on the host element or any ancestor:
 
 ```css
 ngx-dadata {
-  --ngx-dadata-border-color: #d4d4d4;
-  --ngx-dadata-border-radius: 4px;
-  --ngx-dadata-bg: #fff;
-  --ngx-dadata-focus-color: #4a90d9;
-  --ngx-dadata-hover-bg: #f0f0f0;
-  --ngx-dadata-active-bg: #4a90d9;
-  --ngx-dadata-active-color: #fff;
-  --ngx-dadata-detail-color: #888;
+  --ngx-dadata-bg: #f5f5f5;
+  --ngx-dadata-border-radius: 12px;
+  --ngx-dadata-focus-color: #0066cc;
 }
 ```
 
+### Design Tokens
+
+**Global**
+
 | Property | Default | Description |
 |----------|---------|-------------|
-| `--ngx-dadata-border-color` | `#d4d4d4` | Border color for input and dropdown. |
-| `--ngx-dadata-border-radius` | `4px` | Border radius for input and dropdown corners. |
-| `--ngx-dadata-bg` | `#fff` | Background color for input and dropdown. |
-| `--ngx-dadata-focus-color` | `#4a90d9` | Outline color when input is focused. |
-| `--ngx-dadata-hover-bg` | `#f0f0f0` | Background color of hovered suggestion. |
-| `--ngx-dadata-active-bg` | `#4a90d9` | Background color of active (keyboard-selected) suggestion. |
-| `--ngx-dadata-active-color` | `#fff` | Text color of active suggestion. |
-| `--ngx-dadata-detail-color` | `#888` | Text color for secondary details (e.g., INN in party mode). |
+| `--ngx-dadata-font-family` | `inherit` | Font family for all text. |
+| `--ngx-dadata-font-size` | `1rem` | Base font size. |
+| `--ngx-dadata-transition-duration` | `150ms` | Duration for all transitions (set to `0ms` to disable). |
+
+**Input**
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--ngx-dadata-bg` | `light-dark(#fff, #1f2937)` | Input background color. |
+| `--ngx-dadata-color` | `light-dark(#111827, #f9fafb)` | Input text color. |
+| `--ngx-dadata-border-color` | `light-dark(#d1d5db, #374151)` | Input border color. |
+| `--ngx-dadata-border-radius` | `8px` | Input border radius. |
+| `--ngx-dadata-placeholder-color` | `light-dark(#9ca3af, #6b7280)` | Placeholder text color. |
+| `--ngx-dadata-input-padding-x` | `12px` | Horizontal padding inside the input. |
+| `--ngx-dadata-input-padding-y` | `10px` | Vertical padding inside the input. |
+| `--ngx-dadata-focus-color` | `light-dark(#4a90d9, #60a5fa)` | Focus outline color. |
+| `--ngx-dadata-disabled-opacity` | `0.5` | Opacity when the input is disabled. |
+
+**Dropdown**
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--ngx-dadata-dropdown-bg` | `light-dark(#fff, #1f2937)` | Dropdown panel background. |
+| `--ngx-dadata-dropdown-border-color` | `light-dark(#e5e7eb, #374151)` | Dropdown border color. |
+| `--ngx-dadata-dropdown-shadow` | `light-dark(0 4px 6px -1px rgba(0,0,0,0.1), ...)` | Dropdown box shadow. |
+| `--ngx-dadata-dropdown-max-height` | `300px` | Maximum height before scrolling. |
+| `--ngx-dadata-dropdown-border-radius` | `0 0 8px 8px` | Dropdown border radius (bottom corners). |
+
+**Options**
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--ngx-dadata-option-padding-x` | `12px` | Horizontal padding for each option. |
+| `--ngx-dadata-option-padding-y` | `8px` | Vertical padding for each option. |
+| `--ngx-dadata-hover-bg` | `light-dark(#f3f4f6, #374151)` | Hovered option background. |
+| `--ngx-dadata-active-bg` | `light-dark(#4a90d9, #60a5fa)` | Active (keyboard-selected) option background. |
+| `--ngx-dadata-active-color` | `light-dark(#fff, #111827)` | Active option text color. |
+| `--ngx-dadata-detail-color` | `light-dark(#6b7280, #9ca3af)` | Secondary detail text color (e.g., INN in party mode). |
+| `--ngx-dadata-detail-font-size` | `0.85em` | Detail text font size. |
+
+**Scrollbar**
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--ngx-dadata-scrollbar-thumb` | `light-dark(#c1c1c1, #4b5563)` | Scrollbar thumb color. |
+| `--ngx-dadata-scrollbar-track` | `transparent` | Scrollbar track color. |
+
+**Match Highlight**
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--ngx-dadata-match-bg` | `light-dark(rgba(74,144,217,0.15), rgba(96,165,250,0.25))` | Background for highlighted query matches. |
+
+### Dark Mode
+
+The component respects `prefers-color-scheme` automatically via `color-scheme: light dark` and `light-dark()` CSS function. To force a specific mode, set `color-scheme` on an ancestor:
+
+```css
+/* Force dark mode */
+.dark-theme ngx-dadata { color-scheme: dark; }
+
+/* Force light mode */
+.light-theme ngx-dadata { color-scheme: light; }
+```
+
+### Accessibility Media Queries
+
+The component handles these automatically:
+
+- **`prefers-reduced-motion: reduce`** -- disables all transitions
+- **`forced-colors: active`** -- uses system highlight colors (Windows High Contrast)
+- **`pointer: coarse`** -- enlarges touch targets to 48px minimum
 
 ## Accessibility
 
