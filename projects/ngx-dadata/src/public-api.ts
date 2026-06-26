@@ -2,6 +2,7 @@ export { NgxDadataComponent } from './lib/ngx-dadata.component';
 export { NgxDadataModule } from './lib/ngx-dadata.module';
 export { NgxDadataService, DadataType } from './lib/ngx-dadata.service';
 export { DadataConfigDefault } from './lib/dadata-config';
+export { NGX_DADATA_CONFIG, provideNgxDadata } from './lib/provide';
 export type {
   DadataConfig,
   DadataLocation,

@@ -30,11 +30,11 @@
           [attr.aria-selected]="activeIndex() === i"
           (mousedown)="onSuggestionClick(item)">
           {{ item.value }}
-          @if (config().type === 'party' && item.data) {
+          @if (effectiveConfig().type === 'party' && item.data) {
             <br />
             <span class="ngx-dadata-detail">
               {{ $any(item.data).inn }}
-              @if (config().partyAddress === 'full') {
+              @if (effectiveConfig().partyAddress === 'full') {
                 {{ $any(item.data).address?.value }}
               } @else {
                 {{ $any(item.data).address?.data?.city }}

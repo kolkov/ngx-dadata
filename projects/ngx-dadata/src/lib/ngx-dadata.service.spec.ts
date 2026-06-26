@@ -7,6 +7,7 @@ import { DadataConfig, GeolocateOptions, IplocateOptions } from './dadata-config
 import { DadataSuggestion } from './models/suggestion';
 import { DadataResponse, DadataIplocateResponse } from './models/dadata-response';
 import { DadataAddress } from './models/data';
+import { provideNgxDadata } from './provide';
 
 const API_BASE = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/';
 
@@ -1045,6 +1046,113 @@ describe('NgxDadataService', () => {
 
       expect(errored).toBe(false);
       expect(completed).toBe(true);
+    });
+  });
+
+  // =====================================================
+  // DI config (provideNgxDadata)
+  // =====================================================
+  describe('DI config via provideNgxDadata', () => {
+    const diConfig: DadataConfig = {
+      apiKey: 'di-token-xyz',
+      type: DadataType.fio,
+      limit: 7,
+    };
+
+    let diService: NgxDadataService;
+    let diHttpMock: HttpTestingController;
+
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          provideNgxDadata(diConfig),
+        ],
+      });
+      diService = TestBed.inject(NgxDadataService);
+      diHttpMock = TestBed.inject(HttpTestingController);
+    });
+
+    afterEach(() => {
+      diHttpMock.verify();
+    });
+
+    it('getSuggestions should use DI config when no config param is passed', () => {
+      diService.getSuggestions('Ivan').subscribe();
+
+      const req = diHttpMock.expectOne(API_BASE + 'fio');
+      expect(req.request.headers.get('Authorization')).toBe('Token di-token-xyz');
+      expect(req.request.body.count).toBe(7);
+      req.flush(makeResponse([]));
+    });
+
+    it('getSuggestions should prefer explicit config param over DI config', () => {
+      const overrideConfig: DadataConfig = {
+        apiKey: 'override-token',
+        type: DadataType.bank,
+        limit: 3,
+      };
+      diService.getSuggestions('Sber', overrideConfig).subscribe();
+
+      const req = diHttpMock.expectOne(API_BASE + 'bank');
+      expect(req.request.headers.get('Authorization')).toBe('Token override-token');
+      expect(req.request.body.count).toBe(3);
+      req.flush(makeResponse([]));
+    });
+
+    it('findById should use DI config when no config param is passed', () => {
+      diService.findById('7707083893', DadataType.party).subscribe();
+
+      const req = diHttpMock.expectOne(
+        'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party',
+      );
+      expect(req.request.headers.get('Authorization')).toBe('Token di-token-xyz');
+      req.flush(makeResponse([]));
+    });
+
+    it('findById should prefer explicit config param over DI config', () => {
+      const overrideConfig: DadataConfig = { apiKey: 'override-token' };
+      diService.findById('7707083893', DadataType.party, overrideConfig).subscribe();
+
+      const req = diHttpMock.expectOne(
+        'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party',
+      );
+      expect(req.request.headers.get('Authorization')).toBe('Token override-token');
+      req.flush(makeResponse([]));
+    });
+
+    it('getSuggestions should return suggestions when using DI config', () => {
+      const suggestions = [makeAddressSuggestion('Ivan Ivanov')];
+
+      let result: DadataSuggestion[] = [];
+      diService.getSuggestions('Ivan').subscribe((data) => {
+        result = data;
+      });
+
+      const req = diHttpMock.expectOne(API_BASE + 'fio');
+      req.flush(makeResponse(suggestions));
+
+      expect(result).toEqual(suggestions);
+    });
+  });
+
+  // =====================================================
+  // No config at all (no DI, no param)
+  // =====================================================
+  describe('no config provided', () => {
+    it('getSuggestions should throw when no config param and no DI config', () => {
+      // Service from the main beforeEach — no provideNgxDadata()
+      expect(() => service.getSuggestions('test')).toThrowError(
+        /No config provided/,
+      );
+    });
+
+    it('findById should throw when no config param and no DI config', () => {
+      expect(() => service.findById('123', DadataType.party)).toThrowError(
+        /No config provided/,
+      );
     });
   });
 });

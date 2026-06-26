@@ -4,9 +4,10 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { NgxDadataComponent } from './ngx-dadata.component';
 import { DadataType } from './ngx-dadata.service';
-import { DadataConfig } from './dadata-config';
+import { DadataConfig, DadataConfigDefault } from './dadata-config';
 import { DadataSuggestion } from './models/suggestion';
 import { DadataAddress } from './models/data';
+import { provideNgxDadata } from './provide';
 
 const API_BASE = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/';
 
@@ -876,6 +877,125 @@ describe('NgxDadataComponent', () => {
 
       const detail = fixture.nativeElement.querySelector('.ngx-dadata-detail');
       expect(detail.textContent).toContain('Moscow, Tverskaya st., 1');
+    });
+  });
+
+  // =====================================================================
+  // DI config via provideNgxDadata
+  // =====================================================================
+
+  describe('DI config via provideNgxDadata', () => {
+    const DI_CONFIG: DadataConfig = {
+      apiKey: 'di-test-token',
+      type: DadataType.fio,
+      delay: 200,
+    };
+
+    let diFixture: ComponentFixture<NgxDadataComponent>;
+    let diComponent: NgxDadataComponent;
+    let diHttpMock: HttpTestingController;
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [NgxDadataComponent],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          provideNgxDadata(DI_CONFIG),
+        ],
+      });
+
+      diFixture = TestBed.createComponent(NgxDadataComponent);
+      diComponent = diFixture.componentInstance;
+      diHttpMock = TestBed.inject(HttpTestingController);
+      // Do NOT set config input — let DI config apply
+      diFixture.detectChanges();
+    });
+
+    afterEach(() => {
+      diHttpMock.verify();
+      vi.useRealTimers();
+    });
+
+    it('should use DI config when no input config is set', () => {
+      typeInInput(diFixture, 'Ivan');
+      vi.advanceTimersByTime(DI_CONFIG.delay!);
+
+      // Should hit fio endpoint (from DI config), not address
+      const req = diHttpMock.expectOne(API_BASE + 'fio');
+      expect(req.request.headers.get('Authorization')).toBe('Token di-test-token');
+      req.flush({ suggestions: MOCK_SUGGESTIONS });
+      diFixture.detectChanges();
+    });
+
+    it('should use DI config delay for debounce', () => {
+      typeInInput(diFixture, 'test');
+
+      // Before DI delay (200ms) — no request
+      vi.advanceTimersByTime(DI_CONFIG.delay! - 1);
+      diHttpMock.expectNone(API_BASE + 'fio');
+
+      // After DI delay — request fires
+      vi.advanceTimersByTime(1);
+      const req = diHttpMock.expectOne(API_BASE + 'fio');
+      req.flush({ suggestions: [] });
+    });
+
+    it('should prefer input config over DI config', () => {
+      const inputConfig: DadataConfig = {
+        apiKey: 'input-token',
+        type: DadataType.bank,
+        delay: 100,
+      };
+      diFixture.componentRef.setInput('config', inputConfig);
+      diFixture.detectChanges();
+
+      // Need a fresh component init for the new delay to take effect in the pipe.
+      // But since debounceTime is set once in ngOnInit, let's test that the
+      // effectiveConfig resolves to the input config by checking the API type
+      // used in the request when typing after config change.
+      // Note: debounceTime was already set from DI_CONFIG.delay in ngOnInit.
+      // The switchMap however reads effectiveConfig() on each emission.
+      typeInInput(diFixture, 'Sber');
+      vi.advanceTimersByTime(DI_CONFIG.delay!);
+
+      // Should hit bank endpoint (from input config), not fio (from DI config)
+      const req = diHttpMock.expectOne(API_BASE + 'bank');
+      expect(req.request.headers.get('Authorization')).toBe('Token input-token');
+      req.flush({ suggestions: [] });
+    });
+
+    it('should work with default config when no DI and no input', () => {
+      // Create a component without DI config and without input config
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [NgxDadataComponent],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
+      });
+
+      const freshFixture = TestBed.createComponent(NgxDadataComponent);
+      freshFixture.detectChanges();
+
+      // Component should create without errors
+      expect(freshFixture.componentInstance).toBeTruthy();
+
+      // Uses DadataConfigDefault (address type, empty apiKey, 500ms delay)
+      typeInInput(freshFixture, 'test');
+      vi.advanceTimersByTime(500);
+
+      const freshHttpMock = TestBed.inject(HttpTestingController);
+      const req = freshHttpMock.expectOne(API_BASE + 'address');
+      expect(req.request.headers.get('Authorization')).toBe('Token ');
+      req.flush({ suggestions: [] });
+
+      freshHttpMock.verify();
+      freshFixture.destroy();
     });
   });
 });

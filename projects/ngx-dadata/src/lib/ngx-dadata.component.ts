@@ -19,6 +19,7 @@ import { debounceTime, switchMap } from 'rxjs/operators';
 import { DadataType, NgxDadataService } from './ngx-dadata.service';
 import { DadataSuggestion } from './models/suggestion';
 import { DadataConfig, DadataConfigDefault } from './dadata-config';
+import { NGX_DADATA_CONFIG } from './provide';
 
 let nextId = 0;
 
@@ -44,10 +45,28 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor {
   private readonly dataService = inject(NgxDadataService);
   private readonly elRef = inject(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injectedConfig = inject(NGX_DADATA_CONFIG, { optional: true });
 
   readonly config = input<DadataConfig>(DadataConfigDefault);
   readonly placeholder = input('');
   readonly disabled = input(false);
+
+  /**
+   * Effective config: input takes priority, then DI, then DadataConfigDefault.
+   *
+   * When the consumer provides [config]="myConfig", that wins.
+   * Otherwise, if provideNgxDadata() was used, the DI config is used.
+   * As a last resort, DadataConfigDefault applies (empty apiKey, address type).
+   */
+  protected readonly effectiveConfig = computed(() => {
+    const inputConfig = this.config();
+    // If the input was explicitly set (not the default), use it
+    if (inputConfig !== DadataConfigDefault) {
+      return inputConfig;
+    }
+    // Fall back to DI-provided config, then to the default
+    return this.injectedConfig ?? DadataConfigDefault;
+  });
 
   readonly selected = output<DadataSuggestion>();
 
@@ -71,8 +90,8 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor {
   ngOnInit(): void {
     this.input$
       .pipe(
-        debounceTime(this.config().delay ?? 500),
-        switchMap((query) => this.dataService.getSuggestions(query, this.config())),
+        debounceTime(this.effectiveConfig().delay ?? 500),
+        switchMap((query) => this.dataService.getSuggestions(query, this.effectiveConfig())),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((data) => {

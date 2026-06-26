@@ -5,6 +5,7 @@ import { map, catchError } from 'rxjs/operators';
 import { DadataResponse, DadataIplocateResponse } from './models/dadata-response';
 import { DadataSuggestion } from './models/suggestion';
 import { DadataConfig, GeolocateOptions, IplocateOptions } from './dadata-config';
+import { NGX_DADATA_CONFIG } from './provide';
 
 export enum DadataType {
   // Primary suggestion types
@@ -41,6 +42,7 @@ const API_BASE = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/';
 @Injectable({ providedIn: 'root' })
 export class NgxDadataService {
   private readonly http = inject(HttpClient);
+  private readonly defaultConfig = inject(NGX_DADATA_CONFIG, { optional: true });
 
   private buildHeaders(apiKey: string): HttpHeaders {
     return new HttpHeaders({
@@ -48,6 +50,16 @@ export class NgxDadataService {
       'Content-Type': 'application/json',
       Authorization: `Token ${apiKey}`,
     });
+  }
+
+  private resolveConfig(config?: DadataConfig): DadataConfig {
+    const resolved = config ?? this.defaultConfig;
+    if (!resolved) {
+      throw new Error(
+        'NgxDadata: No config provided. Either pass a config parameter or use provideNgxDadata() in your application providers.',
+      );
+    }
+    return resolved;
   }
 
   private static stripUndefined(body: Record<string, unknown>): Record<string, unknown> {
@@ -59,33 +71,34 @@ export class NgxDadataService {
     return body;
   }
 
-  getSuggestions(query: string, config: DadataConfig): Observable<DadataSuggestion[]> {
-    const type = config.type ?? DadataType.address;
-    const headers = this.buildHeaders(config.apiKey);
+  getSuggestions(query: string, config?: DadataConfig): Observable<DadataSuggestion[]> {
+    const resolvedConfig = this.resolveConfig(config);
+    const type = resolvedConfig.type ?? DadataType.address;
+    const headers = this.buildHeaders(resolvedConfig.apiKey);
     const body: Record<string, unknown> = NgxDadataService.stripUndefined({
       query,
-      count: config.limit ?? 10,
+      count: resolvedConfig.limit ?? 10,
       // Common params
-      locations: config.locations,
-      locations_boost: config.locationsBoost,
-      from_bound: config.bounds?.fromBound,
-      to_bound: config.bounds?.toBound,
+      locations: resolvedConfig.locations,
+      locations_boost: resolvedConfig.locationsBoost,
+      from_bound: resolvedConfig.bounds?.fromBound,
+      to_bound: resolvedConfig.bounds?.toBound,
       // Address params
-      restrict_value: config.restrictValue,
-      language: config.language,
-      locations_geo: config.locationsGeo,
-      division: config.division,
+      restrict_value: resolvedConfig.restrictValue,
+      language: resolvedConfig.language,
+      locations_geo: resolvedConfig.locationsGeo,
+      division: resolvedConfig.division,
       // Party params
-      type: config.entityType,
-      status: config.status,
-      okved: config.okved,
-      branch_type: config.branchType,
+      type: resolvedConfig.entityType,
+      status: resolvedConfig.status,
+      okved: resolvedConfig.okved,
+      branch_type: resolvedConfig.branchType,
       // Bank params (share 'type' and 'status' API field names with party)
-      ...(config.bankType != null ? { type: config.bankType } : {}),
-      ...(config.bankStatus != null ? { status: config.bankStatus } : {}),
+      ...(resolvedConfig.bankType != null ? { type: resolvedConfig.bankType } : {}),
+      ...(resolvedConfig.bankStatus != null ? { status: resolvedConfig.bankStatus } : {}),
       // FIO params
-      gender: config.gender,
-      parts: config.parts,
+      gender: resolvedConfig.gender,
+      parts: resolvedConfig.parts,
     });
 
     return this.http.post<DadataResponse>(`${API_BASE}suggest/${type}`, body, { headers }).pipe(
@@ -94,11 +107,12 @@ export class NgxDadataService {
     );
   }
 
-  findById(query: string, type: DadataType, config: DadataConfig): Observable<DadataSuggestion[]> {
-    const headers = this.buildHeaders(config.apiKey);
+  findById(query: string, type: DadataType, config?: DadataConfig): Observable<DadataSuggestion[]> {
+    const resolvedConfig = this.resolveConfig(config);
+    const headers = this.buildHeaders(resolvedConfig.apiKey);
     const body: Record<string, unknown> = NgxDadataService.stripUndefined({
       query,
-      count: config.limit,
+      count: resolvedConfig.limit,
     });
 
     return this.http.post<DadataResponse>(`${API_BASE}findById/${type}`, body, { headers }).pipe(
