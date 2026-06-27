@@ -12,17 +12,17 @@
     font-size: 2rem;
     font-weight: 700;
     margin: 0 0 8px;
-    color: #1a1a1a;
+    color: light-dark(#1a1a1a, #f3f4f6);
   }
 }
 
 .demo-subtitle {
-  color: #555;
+  color: light-dark(#555, #9ca3af);
   margin: 0 0 12px;
   font-size: 1.05rem;
 
   a {
-    color: #0066cc;
+    color: light-dark(#0066cc, #60a5fa);
     text-decoration: none;
 
     &:hover {
@@ -35,7 +35,7 @@
   font-size: 0.9rem;
 
   a {
-    color: #0066cc;
+    color: light-dark(#0066cc, #60a5fa);
     text-decoration: none;
 
     &:hover {
@@ -46,31 +46,31 @@
 
 .demo-links-sep {
   margin: 0 6px;
-  color: #ccc;
+  color: light-dark(#ccc, #4b5563);
 }
 
 .demo-section {
   margin-bottom: 28px;
   padding: 20px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid light-dark(#e8e8e8, #374151);
   border-radius: 8px;
-  background: #fff;
+  background: light-dark(#fff, #1f2937);
 
   h2 {
     font-size: 1.1rem;
     font-weight: 600;
     margin: 0 0 12px;
-    color: #1a1a1a;
+    color: light-dark(#1a1a1a, #f3f4f6);
   }
 }
 
 .demo-hint {
   font-size: 0.85rem;
-  color: #777;
+  color: light-dark(#777, #9ca3af);
   margin: 0 0 12px;
 
   a {
-    color: #0066cc;
+    color: light-dark(#0066cc, #60a5fa);
     text-decoration: none;
 
     &:hover {
@@ -80,39 +80,40 @@
 }
 
 .demo-api-key {
-  background: #f7f7f7;
-  border-color: #ddd;
+  background: light-dark(#f7f7f7, #111827);
+  border-color: light-dark(#ddd, #374151);
 }
 
 .demo-input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid light-dark(#d0d0d0, #4b5563);
   border-radius: 6px;
   font-size: 0.95rem;
   font-family: inherit;
-  background: #fff;
+  background: light-dark(#fff, #1f2937);
+  color: inherit;
   box-sizing: border-box;
   transition: border-color 0.15s;
 
   &:focus {
     outline: none;
-    border-color: #0066cc;
-    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.15);
+    border-color: light-dark(#0066cc, #60a5fa);
+    box-shadow: 0 0 0 2px light-dark(rgba(0, 102, 204, 0.15), rgba(96, 165, 250, 0.2));
   }
 
   &::placeholder {
-    color: #aaa;
+    color: light-dark(#aaa, #6b7280);
   }
 }
 
 .demo-bound-value {
   margin: 12px 0 0;
   font-size: 0.85rem;
-  color: #555;
+  color: light-dark(#555, #9ca3af);
 
   code {
-    background: #f0f0f0;
+    background: light-dark(#f0f0f0, #374151);
     padding: 2px 6px;
     border-radius: 3px;
     font-size: 0.85em;
@@ -120,7 +121,7 @@
 }
 
 .demo-result {
-  background: #fafafa;
+  background: light-dark(#fafafa, #111827);
 
   h2 {
     margin-bottom: 8px;

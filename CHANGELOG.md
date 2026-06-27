@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.1.0] - 2026-06-27
+
+### Added
+
+- **28 CSS design tokens** for complete visual customization (`--ngx-dadata-*` custom properties).
+- **Automatic dark mode** via `light-dark()` CSS function -- adapts to `prefers-color-scheme` with zero configuration.
+- **Dropdown animation** using `@starting-style` CSS (progressive enhancement).
+- **Touch target sizing** via `@media (pointer: coarse)` -- 48px minimum height on touch devices.
+- **Standard scrollbar styling** (`scrollbar-width: thin`, `scrollbar-color`) on dropdown panel.
+- **`overscroll-behavior: contain`** prevents scroll leaking from dropdown to page.
+- **High contrast mode** support via `@media (forced-colors: active)`.
+- **`prefers-reduced-motion`** support -- disables all transitions.
+- **`effectiveConfig` merge logic** -- DI config (`provideNgxDadata`) and per-component `[config]` now merge properly. `apiKey` from DI is used when input config has empty apiKey.
+
+### Changed
+
+- CSS custom properties expanded from 8 to 28 (see Theming section in README).
+- Input border-radius default changed from 4px to 8px.
+- Focus indicator uses `:focus-visible` instead of `:focus` (keyboard-only).
+- Placeholder styling normalized across browsers (Firefox `opacity: 1`).
+- Demo app fully supports dark mode via `light-dark()`.
+- Demo app API key configured via `provideNgxDadata()` (DI) instead of hardcoded in component.
+
+### Fixed
+
+- `effectiveConfig` now merges input config with DI config instead of "input wins all". Empty `apiKey` in `[config]` correctly falls back to DI-provided key.
+- README: `(selected)` output type corrected from `EventEmitter` to `OutputEmitterRef`.
+- Demo app dark mode mismatch (light page + dark components) resolved.
+
 ## [2.0.0] - 2026-06-26
 
 ### Breaking Changes

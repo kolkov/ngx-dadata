@@ -52,20 +52,32 @@ export class NgxDadataComponent implements OnInit, ControlValueAccessor {
   readonly disabled = input(false);
 
   /**
-   * Effective config: input takes priority, then DI, then DadataConfigDefault.
+   * Effective config: merges input config with DI config.
    *
-   * When the consumer provides [config]="myConfig", that wins.
-   * Otherwise, if provideNgxDadata() was used, the DI config is used.
-   * As a last resort, DadataConfigDefault applies (empty apiKey, address type).
+   * Input [config] fields take priority. Empty/missing fields fall back to
+   * DI config (provideNgxDadata), then to DadataConfigDefault.
+   * This allows per-component overrides (e.g. type, locations) while
+   * inheriting apiKey from global DI config.
    */
   protected readonly effectiveConfig = computed(() => {
     const inputConfig = this.config();
-    // If the input was explicitly set (not the default), use it
-    if (inputConfig !== DadataConfigDefault) {
+    const diConfig = this.injectedConfig;
+
+    if (inputConfig === DadataConfigDefault && !diConfig) {
+      return DadataConfigDefault;
+    }
+    if (inputConfig === DadataConfigDefault) {
+      return diConfig!;
+    }
+    if (!diConfig) {
       return inputConfig;
     }
-    // Fall back to DI-provided config, then to the default
-    return this.injectedConfig ?? DadataConfigDefault;
+
+    return {
+      ...diConfig,
+      ...inputConfig,
+      apiKey: inputConfig.apiKey || diConfig.apiKey || '',
+    };
   });
 
   readonly selected = output<DadataSuggestion>();
