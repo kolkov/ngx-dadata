@@ -4,13 +4,17 @@
   box-sizing: border-box;
 }
 
+:root {
+  color-scheme: light dark;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  color: #333;
-  background: #f5f5f5;
+  color: light-dark(#333, #e5e7eb);
+  background: light-dark(#f5f5f5, #111827);
   -webkit-font-smoothing: antialiased;
 }
 

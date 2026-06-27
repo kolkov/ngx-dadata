@@ -172,7 +172,7 @@ enum DadataType {
 | `[config]` | `DadataConfig` | Configuration (optional if `provideNgxDadata()` is used). |
 | `[placeholder]` | `string` | Input placeholder text. Default: `''`. |
 | `[disabled]` | `boolean` | Disables the input. Default: `false`. |
-| `(selected)` | `EventEmitter<DadataSuggestion>` | Emitted when a suggestion is selected. |
+| `(selected)` | `OutputEmitterRef<DadataSuggestion>` | Emitted when a suggestion is selected. |
 | `ngModel` / `formControlName` | `string` | Form binding for the input value. |
 
 ## Service API
