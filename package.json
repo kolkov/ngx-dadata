@@ -38,7 +38,7 @@
     "@vitest/coverage-v8": "^4.1.9",
     "angular-eslint": "^22.0.0",
     "cpx": "^1.5.0",
-    "eslint": "^10.6.0",
+    "eslint": "^10.7.0",
     "jsdom": "^29.1.1",
     "ng-packagr": "^22.0.0",
     "prettier": "^3.9.1",
