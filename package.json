@@ -20,7 +20,7 @@
     "copy:license": "cpx ./LICENSE dist/ngx-dadata"
   },
   "dependencies": {
-    "@angular/common": "^22.0.4",
+    "@angular/common": "^22.1.1",
     "@angular/compiler": "^22.0.4",
     "@angular/core": "^22.0.4",
     "@angular/elements": "^22.0.4",
